@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -100,7 +99,7 @@ public class RobotContainer {
         SimulatedArena.getInstance().addDriveTrainSimulation(simulation);
         drive =
             new Drive(
-                 new GyroIOSim(simulation.getGyroSimulation()),
+                new GyroIOSim(simulation.getGyroSimulation()),
                 new ModuleIOTalonFXSim(TunerConstants.FrontLeft, simulation.getModules()[0]),
                 new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
                 new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
