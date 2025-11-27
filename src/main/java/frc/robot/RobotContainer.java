@@ -120,9 +120,9 @@ public class RobotContainer {
             new Vision(
                 drive,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, simulation::getSimulatedDriveTrainPose),
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose));
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1, simulation::getSimulatedDriveTrainPose));
         break;
 
       default:
