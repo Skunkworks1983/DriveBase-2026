@@ -32,3 +32,8 @@ If you would like to run only Auto: Select the Auto to run through the Auto Choi
 If you would like to run only TeleOp: In the Robot State dropdown on SIM GUI, select Teleoperated. The robot will now drive following TeleOp joysticks.
 
 If you would like to simulate a match: First, queue an auto and select an alliance station as described above. Then, in the FMS dropdown on SIM GUI press the "Auto" button located next to the text "Match Time"
+
+## Notes
+At the moment only teleop from the red alliance perspective is working
+
+If the simulation is too laggy, you can reduce the 3d rendering lighting quality. In the top left of AdvantageScope there is a dropdown "Help". Under it press the button "Show Preferences". You can then change the 3D mode from to Low Power or Standard
