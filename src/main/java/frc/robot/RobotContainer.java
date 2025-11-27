@@ -47,8 +47,9 @@ public class RobotContainer {
   private final Vision vision;
 
   // Controller
-  private final Joystick leftJoystick = new Joystick(0);
-  private final Joystick rightJoystick = new Joystick(1);
+  private final Joystick leftJoystick;
+  private final Joystick rightJoystick;
+  private final XboxController xboxController;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -58,6 +59,15 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    if (Constants.controlScheme == Constants.ControlScheme.OI) {
+      leftJoystick = new Joystick(0);
+      rightJoystick = new Joystick(1);
+      xboxController = null;
+    } else {
+      xboxController = new XboxController(0);
+      leftJoystick = null;
+      rightJoystick = null;
+    }
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -162,12 +172,23 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -leftJoystick.getY(), // -X (used to be)
-            () -> -leftJoystick.getX(), // -Y (used to be)
-            () -> rightJoystick.getX()));
+    if (Constants.controlScheme == Constants.ControlScheme.OI) {
+      drive.setDefaultCommand(
+          DriveCommands.joystickDrive(
+              drive,
+              () -> -leftJoystick.getY(), // -X (used to be)
+              () -> -leftJoystick.getX(), // -Y (used to be)
+              () -> rightJoystick.getX()));
+    } else {
+      
+      drive.setDefaultCommand(
+          DriveCommands.joystickDrive(
+              drive,
+              () -> -xboxController.getLeftY(),
+              () -> -xboxController.getLeftX(),
+              () -> -xboxController.getRightX()));
+    }
+    Logger.recordOutput("Control Scheme", Constants.controlScheme);
 
     // Lock to 0° when A button is held
     // controller

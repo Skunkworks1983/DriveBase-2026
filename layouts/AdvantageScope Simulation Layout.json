@@ -172,16 +172,6 @@
                     "options": {
                       "variant": "Algae"
                     }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "/RealOutputs/Odometry/Robot",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "model": "2025 KitBot",
-                      "color": "#00ff00"
-                    }
                   }
                 ],
                 "game": "2025 Field (Welded)",
@@ -192,17 +182,17 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -5.3334535091037605,
-                  6.665044835376711,
-                  5.798327045994865
+                  12.927385108772846,
+                  4.788574591149738,
+                  -0.43842544008732975
                 ],
                 "cameraTarget": [
-                  -5.873104342482903,
-                  -3.1011185440487443,
-                  -0.40065838243903
+                  -6.070399849279336,
+                  -2.785638513072066,
+                  -2.2613820054053995
                 ]
               },
-              "controlsHeight": 459
+              "controlsHeight": 370
             }
           ]
         }
