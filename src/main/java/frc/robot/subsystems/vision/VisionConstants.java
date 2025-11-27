@@ -11,6 +11,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import frc.robot.util.LoggedTunableNumber;
 
 public class VisionConstants {
   // AprilTag layout
@@ -49,4 +50,14 @@ public class VisionConstants {
   public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
   public static double angularStdDevMegatag2Factor =
       Double.POSITIVE_INFINITY; // No rotation data available
+    
+      // Simulation Constants (Currently using LL 4 specs)
+      public static final LoggedTunableNumber cameraResWidth = new LoggedTunableNumber("Vision/sim/Camera Width", 1280);
+      public static final LoggedTunableNumber cameraResHeight = new LoggedTunableNumber("Vision/sim/Camera Height", 800);
+      public static final LoggedTunableNumber cameraDiagonalFOVDegrees = new LoggedTunableNumber("Vision/sim/Camera Diagonal FOV Degrees", 96.4);
+      public static final LoggedTunableNumber cameraFPS= new LoggedTunableNumber("Vision/sim/Camera FPS", 120);
+      public static final LoggedTunableNumber cameraAverageLatencyMS = new LoggedTunableNumber("Vision/sim/Camera Average Latency MS", 30);
+      public static final LoggedTunableNumber cameraLatencyStdDevMs = new LoggedTunableNumber("Vision/sim/Camera Latency StdDev MS", 5);
+      public static final LoggedTunableNumber cameraAvgErrorPx = new LoggedTunableNumber("Vision/sim/Camera Average Error PX", 0.25);
+      public static final LoggedTunableNumber cameraErrorStdDevPx = new LoggedTunableNumber("Vision/sim/Camera Error StdDev PX", 0.08);
 }
