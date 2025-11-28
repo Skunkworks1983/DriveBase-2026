@@ -51,7 +51,10 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
 
     // Add sim camera
     var cameraProperties = new SimCameraProperties();
-    cameraProperties.setCalibration((int) cameraResWidth.get(), (int) cameraResHeight.get(), Rotation2d.fromDegrees(cameraDiagonalFOVDegrees.get()));
+    cameraProperties.setCalibration(
+        (int) cameraResWidth.get(),
+        (int) cameraResHeight.get(),
+        Rotation2d.fromDegrees(cameraDiagonalFOVDegrees.get()));
     cameraProperties.setFPS(cameraFPS.get());
     cameraProperties.setAvgLatencyMs(cameraAverageLatencyMS.get());
     cameraProperties.setLatencyStdDevMs(cameraLatencyStdDevMs.get());
