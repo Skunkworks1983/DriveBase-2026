@@ -63,10 +63,10 @@ task vendordep(type: Copy) {
     from "$rootDir/AdvantageKit.json"
     into "$buildDir/vendordep"
     expand ("version": pubVersion,
-            "groupId": artifactGroupId,
-            "javaArtifactId": javaArtifactId,
-            "jniArtifactId": wpilibioArtifactId,
-            "frcYear": frcYear)
+    "groupId": artifactGroupId,
+    "javaArtifactId": javaArtifactId,
+    "jniArtifactId": wpilibioArtifactId,
+    "frcYear": frcYear)
 }
 
 build.dependsOn vendordep
