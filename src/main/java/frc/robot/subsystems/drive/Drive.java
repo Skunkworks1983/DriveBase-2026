@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -33,6 +34,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -112,6 +114,8 @@ public class Drive extends SubsystemBase implements VisionConsumer {
           .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
           .withCustomModuleTranslations(getModuleTranslations())
           .withGyro(COTS.ofPigeon2())
+          .withBumperSize(
+              Distance.ofRelativeUnits(30, Inches), Distance.ofRelativeUnits(30, Inches))
           .withSwerveModule(
               COTS.ofMark4i(
                   DCMotor.getKrakenX60Foc(1),
@@ -166,6 +170,10 @@ public class Drive extends SubsystemBase implements VisionConsumer {
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
+
+    // Warmup Pathfinder: This doesn't control the robot, just initialization
+    PathfindingCommand.warmupCommand().schedule();
+
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
