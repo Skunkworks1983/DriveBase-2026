@@ -16,10 +16,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
-
+/**
+ * Container for path finding commands
+ * 
+ * @author Eddy W
+ */
 public class PathFinding {
-  public static Command pathfindToReefScorePose(ReefFace face, BranchSide side) {
-    Pose2d targetPose = FieldConstants.getScoringLocBlue(face, side);
+  /**
+   * @param face The face of the reef to score on
+   * @param branch The reef branch to score on
+   * @return A command that pathfinds to the specified reef scoring pose
+   */
+  public static Command pathfindToReefScorePose(ReefFace face, BranchSide branch) {
+    Pose2d targetPose = FieldConstants.getScoringLocBlue(face, branch);
     Logger.recordOutput("Pathfinding/Target Pose", targetPose);
 
     // Path find flipped properly mirrors field for alliances
@@ -30,9 +39,12 @@ public class PathFinding {
         );
   }
 
-  // This is not a final implementation, just for testing (generating this command
-  // just in time is
-  // expensive, but quick way to do elastic isLeft)
+  /**
+   * @param face The face of the reef to score on
+   * @param isLeft A supplier that is gotten just in time of the branch side to score on (allows for
+   *     a toggle)
+   * @return A command that pathfinds to the specified reef scoring pose
+   */
   public static Command pathfindToReefScorePose(
       ReefFace face, BooleanSupplier isLeft, Drive drive) {
     return Commands.defer(
@@ -43,14 +55,8 @@ public class PathFinding {
   }
 
   /**
-   * Use PathPlanner pathfinding to generate a path to the coral station
-   *
-   * <p>Command creation is deferred so that current pose is fetched just in time
-   *
-   * <p>To ensure approach with proper rotation, a path is found to a point offset from the coral
-   * station, then a path is followed in
-   *
-   * @return
+   * @return A command that pathfinds to a small distance from the nearest coral station, then
+   *     follows a specific final alignment path to ensure ending with correct orientation
    */
   public static Command pathfindToNearestCoralStation(Drive drive) {
     return Commands.defer(
