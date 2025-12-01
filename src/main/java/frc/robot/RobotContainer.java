@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,9 +16,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.PathFinding;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -31,10 +35,13 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.FieldConstants.BranchSide;
+import frc.robot.util.FieldConstants.ReefFace;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,14 +57,7 @@ public class RobotContainer {
   // Controller
   private final Joystick leftJoystick;
   private final Joystick rightJoystick;
-
-  /**
-   * Xbox Controller for simulation.
-   *
-   * <p>Only used when {@link Constants#controlScheme} is set to {@link
-   * Constants.ControlScheme#XBOX}
-   */
-  private final XboxController xboxController;
+  private final CommandXboxController xboxController;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -72,7 +72,7 @@ public class RobotContainer {
       rightJoystick = new Joystick(1);
       xboxController = null;
     } else {
-      xboxController = new XboxController(0);
+      xboxController = new CommandXboxController(0);
       leftJoystick = null;
       rightJoystick = null;
     }
@@ -155,6 +155,9 @@ public class RobotContainer {
         vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
         break;
     }
+    // Register Auto Commands
+    NamedCommands.registerCommand(
+        "PathFindABLeft", PathFinding.pathfindToReefScorePose(ReefFace.AB, BranchSide.LEFT));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -175,7 +178,34 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption("Sim Physics Test", new PathPlannerAuto("SimPhysTest"));
+    autoChooser.addOption("Path Find Test Red", new PathPlannerAuto("PathFindTest"));
 
+    LoggedNetworkBoolean reefPathFindIsLeft =
+        new LoggedNetworkBoolean("Pathfinding/Reef Target Branch Is Left?", true);
+    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
+        .add(
+            "Pathfinding/Score AB",
+            PathFinding.pathfindToReefScorePose(ReefFace.AB, reefPathFindIsLeft::get, drive));
+    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
+        .add(
+            "Pathfinding/Score CD",
+            PathFinding.pathfindToReefScorePose(ReefFace.CD, reefPathFindIsLeft::get, drive));
+    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
+        .add(
+            "Pathfinding/Score EF",
+            PathFinding.pathfindToReefScorePose(ReefFace.EF, reefPathFindIsLeft::get, drive));
+    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
+        .add(
+            "Pathfinding/Score GH",
+            PathFinding.pathfindToReefScorePose(ReefFace.GH, reefPathFindIsLeft::get, drive));
+    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
+        .add(
+            "Pathfinding/Score IJ",
+            PathFinding.pathfindToReefScorePose(ReefFace.IJ, reefPathFindIsLeft::get, drive));
+    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
+        .add(
+            "Pathfinding/Score KL",
+            PathFinding.pathfindToReefScorePose(ReefFace.KL, reefPathFindIsLeft::get, drive));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -203,6 +233,7 @@ public class RobotContainer {
               () -> -xboxController.getLeftY(),
               () -> -xboxController.getLeftX(),
               () -> -xboxController.getRightX()));
+      xboxController.rightTrigger(0.5).whileTrue(PathFinding.pathfindToNearestCoralStation(drive));
     }
     Logger.recordOutput("Control Scheme", Constants.controlScheme);
 
@@ -248,8 +279,6 @@ public class RobotContainer {
    */
   public void resetSimulationField() {
     if (Constants.currentMode != Constants.Mode.SIM) return;
-
-    simulation.setSimulationWorldPose(new Pose2d(12, 1, new Rotation2d()));
 
     SimulatedArena.getInstance().resetFieldForAuto();
   }
