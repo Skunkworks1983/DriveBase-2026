@@ -24,13 +24,18 @@ public class FieldConstants {
     RIGHT
   }
 
-  public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+  public static AprilTagFieldLayout aprilTagLayout =
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // All transforms are from the april tag at the given location
-  public static Transform2d leftReefScoringTransform = new Transform2d(0.55, -0.165, new Rotation2d(Math.PI));
-  public static Transform2d rightReefScoringTransform = new Transform2d(0.55, 0.165, new Rotation2d(Math.PI));
-  public static Transform2d coralStationCollectPathfindTransform = new Transform2d(1, 0, new Rotation2d());
-  public static Transform2d coralStationCollectTransform = new Transform2d(0.55, 0, new Rotation2d());
+  public static Transform2d leftReefScoringTransform =
+      new Transform2d(0.55, -0.165, new Rotation2d(Math.PI));
+  public static Transform2d rightReefScoringTransform =
+      new Transform2d(0.55, 0.165, new Rotation2d(Math.PI));
+  public static Transform2d coralStationCollectPathfindTransform =
+      new Transform2d(1, 0, new Rotation2d());
+  public static Transform2d coralStationCollectTransform =
+      new Transform2d(0.55, 0, new Rotation2d());
 
   public static Pose2d getScoringLocBlue(ReefFace face, BranchSide side) {
     Pose3d tagPose;
@@ -78,7 +83,11 @@ public class FieldConstants {
 
     // Return nearest coral station
     return (distToLeft > distToRight)
-        ? (DriverStation.getAlliance().get() == Alliance.Blue ? rightCoralStation : leftCoralStation)
-        : (DriverStation.getAlliance().get() == Alliance.Blue ? leftCoralStation : rightCoralStation);
+        ? (DriverStation.getAlliance().get() == Alliance.Blue
+            ? rightCoralStation
+            : leftCoralStation)
+        : (DriverStation.getAlliance().get() == Alliance.Blue
+            ? leftCoralStation
+            : rightCoralStation);
   }
 }
