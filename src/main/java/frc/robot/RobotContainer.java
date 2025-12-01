@@ -20,8 +20,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.auto.CustomAutoFactory;
+import frc.robot.auto.PathFinding;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.PathFinding;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -155,6 +156,8 @@ public class RobotContainer {
         vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
         break;
     }
+    CustomAutoFactory.registerCustomAutoChoices();
+
     // Register Auto Commands
     NamedCommands.registerCommand(
         "PathFindABLeft", PathFinding.pathfindToReefScorePose(ReefFace.AB, BranchSide.LEFT));
@@ -179,6 +182,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption("Sim Physics Test", new PathPlannerAuto("SimPhysTest"));
     autoChooser.addOption("Path Find Test Red", new PathPlannerAuto("PathFindTest"));
+    autoChooser.addOption("Custom Auto", CustomAutoFactory.getCustomAuto(drive));
 
     LoggedNetworkBoolean reefPathFindIsLeft =
         new LoggedNetworkBoolean("Pathfinding/Reef Target Branch Is Left?", true);
