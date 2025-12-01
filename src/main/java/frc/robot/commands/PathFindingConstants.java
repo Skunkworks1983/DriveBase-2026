@@ -22,6 +22,9 @@ public class PathFindingConstants {
   public static LoggedTunableNumber maxAngularAccelerationDPSPS =
       new LoggedTunableNumber("PathFinding/Max Angular Acceleration deg/s^2", 720);
 
+  /**
+   * @return Path constraints for path finding gotten from tunable numbers
+   */
   public static PathConstraints buildPathConstraints() {
     // Get constraints just in time to allow dynamic tuning
     LinearVelocity maxVelocity =
