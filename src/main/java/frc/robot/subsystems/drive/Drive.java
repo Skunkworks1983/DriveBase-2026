@@ -97,22 +97,20 @@ public class Drive extends SubsystemBase implements VisionConsumer {
 
   private Field2d field = new Field2d();
 
+  /** MapleSim simulation config for swerve */
   public static final DriveTrainSimulationConfig mapleSimConfig =
       DriveTrainSimulationConfig.Default()
           .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
           .withCustomModuleTranslations(getModuleTranslations())
           .withGyro(COTS.ofPigeon2())
           .withSwerveModule(
-              new SwerveModuleSimulationConfig(
+              COTS.ofMark4i(
                   DCMotor.getKrakenX60Foc(1),
-                  DCMotor.getFalcon500(1),
-                  TunerConstants.FrontLeft.DriveMotorGearRatio,
-                  TunerConstants.FrontLeft.SteerMotorGearRatio,
-                  Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
-                  Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
-                  Meters.of(TunerConstants.FrontLeft.WheelRadius),
-                  KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
-                  WHEEL_COF));
+                  DCMotor.getKrakenX60Foc(1),
+                  COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof,
+                  3));
+
+  /** Consumer to also reset the simulation field pose when resetting odometry */
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
