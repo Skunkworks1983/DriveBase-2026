@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -49,6 +50,13 @@ public class RobotContainer {
   // Controller
   private final Joystick leftJoystick;
   private final Joystick rightJoystick;
+
+  /**
+   * Xbox Controller for simulation.
+   *
+   * <p>Only used when {@link Constants#controlScheme} is set to {@link
+   * Constants.ControlScheme#XBOX}
+   */
   private final XboxController xboxController;
 
   // Dashboard inputs
@@ -71,7 +79,8 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and a CANcoder
+        // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
+        // a CANcoder
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -86,19 +95,22 @@ public class RobotContainer {
                 drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark swerve
-        // template) can be freely intermixed to support alternative hardware arrangements.
+        // TalonFXS controller connected to a CANdi with a PWM encoder. The
+        // implementations
+        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
+        // swerve
+        // template) can be freely intermixed to support alternative hardware
+        // arrangements.
         // Please see the AdvantageKit template documentation for more information:
         // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
         //
         // drive =
-        //     new Drive(
-        //         new GyroIOPigeon2(),
-        //         new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        //         new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        //         new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        //         new ModuleIOTalonFXS(TunerConstants.BackRight));
+        // new Drive(
+        // new GyroIOPigeon2(),
+        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
+        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
+        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
+        // new ModuleIOTalonFXS(TunerConstants.BackRight));
         break;
 
       case SIM:
@@ -196,27 +208,27 @@ public class RobotContainer {
 
     // Lock to 0° when A button is held
     // controller
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAtAngle(
-    //             drive,
-    //             () -> controller.getLeftY(), //- (used to be)
-    //             () -> -controller.getLeftX(),
-    //             () -> Rotation2d.kZero));
+    // .a()
+    // .whileTrue(
+    // DriveCommands.joystickDriveAtAngle(
+    // drive,
+    // () -> controller.getLeftY(), //- (used to be)
+    // () -> -controller.getLeftX(),
+    // () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
     // controller
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-    //                 drive)
-    //             .ignoringDisable(true));
+    // .b()
+    // .onTrue(
+    // Commands.runOnce(
+    // () ->
+    // drive.setPose(
+    // new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+    // drive)
+    // .ignoringDisable(true));
   }
 
   /**
@@ -228,6 +240,12 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
+  /**
+   * This is called at robot initialization during sim
+   *
+   * <p>It temporarily positions the robot (See {@link #resetSimRobotPose} for actual initial robot
+   * positioning) and resets the {@link SimulatedArena} to standard field state
+   */
   public void resetSimulationField() {
     if (Constants.currentMode != Constants.Mode.SIM) return;
 
@@ -236,6 +254,13 @@ public class RobotContainer {
     SimulatedArena.getInstance().resetFieldForAuto();
   }
 
+  /**
+   * This method is called during the periodic cycle during sim. The simulation state is updated and
+   * game pieces positions are logged for AdvantageScope visualization
+   *
+   * @see <a href= "https://shenzhen-robotics-alliance.github.io/maple-sim/reefscape/">MapleSim
+   *     docs</a> for information on how to display game pieces in AdvantageScope
+   */
   public void updateSimulation() {
     if (Constants.currentMode != Constants.Mode.SIM) return;
 
@@ -245,5 +270,21 @@ public class RobotContainer {
         "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
     Logger.recordOutput(
         "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+  }
+
+  /**
+   * This method is called periodically during disabled so that if the alliance is changed it is
+   * registered
+   *
+   * <p>This method sets the {@link #simulation} world pose to mirrored positions based on alliance
+   * color
+   */
+  public void resetSimRobotPose() {
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      simulation.setSimulationWorldPose(new Pose2d(7.6, 6.6, new Rotation2d(Math.PI)));
+    } else {
+      simulation.setSimulationWorldPose(new Pose2d(10, 1.5, new Rotation2d()));
+    }
   }
 }

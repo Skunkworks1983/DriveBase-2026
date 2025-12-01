@@ -52,10 +52,14 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * Drive control logic and odometry management
+ *
+ * @author Eddy W - Simulation
+ */
 public class Drive extends SubsystemBase implements VisionConsumer {
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY =
@@ -97,7 +101,12 @@ public class Drive extends SubsystemBase implements VisionConsumer {
 
   private Field2d field = new Field2d();
 
-  /** MapleSim simulation config for swerve */
+  /**
+   * MapleSim simulation config for swerve
+   *
+   * <p>Uses Kraken X60 FOC motors for both drive and turn motors, MK4i swerve modules with billet
+   * wheels, and a Pigeon 2 gyro
+   */
   public static final DriveTrainSimulationConfig mapleSimConfig =
       DriveTrainSimulationConfig.Default()
           .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
@@ -357,6 +366,7 @@ public class Drive extends SubsystemBase implements VisionConsumer {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
+    // In simulation also reset the simulation field pose
     resetSimulationPoseCallBack.accept(pose);
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }

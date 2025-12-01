@@ -8,14 +8,7 @@
 package frc.robot.subsystems.vision;
 
 import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
-import static frc.robot.subsystems.vision.VisionConstants.cameraAverageLatencyMS;
-import static frc.robot.subsystems.vision.VisionConstants.cameraAvgErrorPx;
-import static frc.robot.subsystems.vision.VisionConstants.cameraDiagonalFOVDegrees;
-import static frc.robot.subsystems.vision.VisionConstants.cameraErrorStdDevPx;
-import static frc.robot.subsystems.vision.VisionConstants.cameraFPS;
-import static frc.robot.subsystems.vision.VisionConstants.cameraLatencyStdDevMs;
-import static frc.robot.subsystems.vision.VisionConstants.cameraResHeight;
-import static frc.robot.subsystems.vision.VisionConstants.cameraResWidth;
+import static frc.robot.subsystems.vision.VisionConstants.cameraSimulationParameters.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
