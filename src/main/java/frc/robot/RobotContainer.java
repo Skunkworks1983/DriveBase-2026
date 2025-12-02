@@ -43,6 +43,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.AutoPreview;
 import frc.robot.util.FieldConstants.BranchSide;
 import frc.robot.util.FieldConstants.ReefFace;
+import frc.robot.util.FieldConstants.ScoringPose;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -174,7 +175,8 @@ public class RobotContainer {
 
     // Register Auto Commands
     NamedCommands.registerCommand(
-        "PathFindABLeft", PathFinding.pathfindToReefScorePose(ReefFace.AB, BranchSide.LEFT));
+        "PathFindABLeft",
+        PathFinding.pathfindToReefScorePose(new ScoringPose(ReefFace.AB, BranchSide.LEFT)));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

@@ -4,28 +4,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.util.FieldConstants.AutoStartPoses;
-import frc.robot.util.FieldConstants.CoralScoreLocation;
+import frc.robot.util.FieldConstants;
+import frc.robot.util.FieldConstants.BranchSide;
 import frc.robot.util.FieldConstants.CoralStation;
+import frc.robot.util.FieldConstants.ReefFace;
+import frc.robot.util.FieldConstants.ScoringPose;
 import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class CustomAutoFactory {
-  private static LoggedDashboardChooser<AutoStartPoses> startPoseChooser;
   private static LoggedDashboardChooser<CoralStation> pickup1Chooser;
   private static LoggedDashboardChooser<CoralStation> pickup2Chooser;
   private static LoggedDashboardChooser<CoralStation> pickup3Chooser;
-  private static LoggedDashboardChooser<CoralScoreLocation> score1Chooser;
-  private static LoggedDashboardChooser<CoralScoreLocation> score2Chooser;
-  private static LoggedDashboardChooser<CoralScoreLocation> score3Chooser;
-  private static LoggedDashboardChooser<CoralScoreLocation> score4Chooser;
+  private static LoggedDashboardChooser<ScoringPose> score1Chooser;
+  private static LoggedDashboardChooser<ScoringPose> score2Chooser;
+  private static LoggedDashboardChooser<ScoringPose> score3Chooser;
+  private static LoggedDashboardChooser<ScoringPose> score4Chooser;
 
   public static void registerCustomAutoChoices() {
-    startPoseChooser = new LoggedDashboardChooser<>("Custom Auto/Start Pose");
-    startPoseChooser.addDefaultOption("Left", AutoStartPoses.LEFT);
-    startPoseChooser.addOption("Middle", AutoStartPoses.MIDDLE);
-    startPoseChooser.addOption("Right", AutoStartPoses.RIGHT);
-
     pickup1Chooser = new LoggedDashboardChooser<>("Custom Auto/Pickup 1 Location");
     registerPickupLocations(pickup1Chooser);
     pickup2Chooser = new LoggedDashboardChooser<>("Custom Auto/Pickup 2 Location");
@@ -48,20 +44,11 @@ public class CustomAutoFactory {
     pickupChooser.addDefaultOption("Coral Station Right", CoralStation.CORAL_STATION_RIGHT);
   }
 
-  private static void registerScoreLocations(
-      LoggedDashboardChooser<CoralScoreLocation> scoreChoser) {
-    scoreChoser.addDefaultOption("AB LEFT", CoralScoreLocation.AB_LEFT);
-    scoreChoser.addOption("AB RIGHT", CoralScoreLocation.AB_RIGHT);
-    scoreChoser.addOption("CD LEFT", CoralScoreLocation.CD_LEFT);
-    scoreChoser.addOption("CD RIGHT", CoralScoreLocation.CD_RIGHT);
-    scoreChoser.addOption("EF LEFT", CoralScoreLocation.EF_LEFT);
-    scoreChoser.addOption("EF RIGHT", CoralScoreLocation.EF_RIGHT);
-    scoreChoser.addOption("GH LEFT", CoralScoreLocation.GH_LEFT);
-    scoreChoser.addOption("GH RIGHT", CoralScoreLocation.GH_RIGHT);
-    scoreChoser.addOption("IJ LEFT", CoralScoreLocation.IJ_LEFT);
-    scoreChoser.addOption("IJ RIGHT", CoralScoreLocation.IJ_RIGHT);
-    scoreChoser.addOption("KL LEFT", CoralScoreLocation.KL_LEFT);
-    scoreChoser.addOption("KL RIGHT", CoralScoreLocation.KL_RIGHT);
+  private static void registerScoreLocations(LoggedDashboardChooser<ScoringPose> scoreChoser) {
+    FieldConstants.getAllScoringPoses()
+        .forEach((pose) -> scoreChoser.addOption(pose.toString(), pose));
+    ScoringPose defaultPose = new ScoringPose(ReefFace.AB, BranchSide.LEFT);
+    scoreChoser.addDefaultOption(defaultPose.toString(), defaultPose);
   }
 
   public static Command getCustomAuto(Drive drive) {
