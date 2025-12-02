@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +44,7 @@ import frc.robot.util.FieldConstants.ScoringPose;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -65,6 +67,8 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  private final LoggedPowerDistribution pdh;
+
   // Sim
   private SwerveDriveSimulation simulation = null;
   private Field2d autoPreviewField = new Field2d();
@@ -82,6 +86,7 @@ public class RobotContainer {
     }
     switch (Constants.currentMode) {
       case REAL:
+        pdh = LoggedPowerDistribution.getInstance(0, ModuleType.kCTRE);
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
@@ -123,6 +128,7 @@ public class RobotContainer {
         break;
 
       case SIM:
+        pdh = LoggedPowerDistribution.getInstance();
         // Sim robot, instantiate physics sim IO implementations
         simulation =
             new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
@@ -152,6 +158,8 @@ public class RobotContainer {
         break;
 
       default:
+        pdh = LoggedPowerDistribution.getInstance();
+
         // Replayed robot, disable IO implementations
         drive =
             new Drive(
