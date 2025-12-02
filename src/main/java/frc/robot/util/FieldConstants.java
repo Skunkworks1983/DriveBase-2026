@@ -1,5 +1,9 @@
 package frc.robot.util;
 
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -8,6 +12,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.TreeSet;
 
 public class FieldConstants {
   /** Reef face following Game Manual labeling */
@@ -40,35 +48,20 @@ public class FieldConstants {
     CORAL_STATION_RIGHT,
   }
 
-  /**
-   * Coral scoring locations
-   *
-   * <p>Reef faces follow game manual naming, left and right with respect to reef face
-   */
-  public static enum CoralScoreLocation {
-    AB_LEFT,
-    CD_LEFT,
-    EF_LEFT,
-    GH_LEFT,
-    IJ_LEFT,
-    KL_LEFT,
-    AB_RIGHT,
-    CD_RIGHT,
-    EF_RIGHT,
-    GH_RIGHT,
-    IJ_RIGHT,
-    KL_RIGHT
+  public record ScoringPose(ReefFace face, BranchSide side) {
+    @Override
+    public String toString() {
+      return face.name() + " " + side.name();
+    }
   }
 
-  /**
-   * This would not be done like this on an actual bot, but it works for a proof of concept
-   *
-   * <p>Left and right with respect to driver station
-   */
-  public static enum AutoStartPoses {
-    LEFT,
-    MIDDLE,
-    RIGHT
+  public static HashSet<ScoringPose> getAllScoringPoses() {
+    HashSet<ScoringPose> scoringPoses = new LinkedHashSet<ScoringPose>(); // Using a linked set to keep items ordered for auto select display
+    for (ReefFace face : ReefFace.values()) {
+      scoringPoses.add(new ScoringPose(face, BranchSide.LEFT));
+      scoringPoses.add(new ScoringPose(face, BranchSide.RIGHT));
+    }
+    return scoringPoses;
   }
 
   public static AprilTagFieldLayout aprilTagLayout =
@@ -79,43 +72,13 @@ public class FieldConstants {
       new Transform2d(0.55, -0.165, new Rotation2d(Math.PI));
   public static Transform2d rightReefScoringTransform =
       new Transform2d(0.55, 0.165, new Rotation2d(Math.PI));
+  
   public static Transform2d coralStationCollectPathfindTransform =
       new Transform2d(1, 0, new Rotation2d());
   public static Transform2d coralStationCollectTransform =
       new Transform2d(0.55, 0, new Rotation2d());
 
-  public static Pose2d getScoringLocBlue(CoralScoreLocation scoreLoc) {
-    switch (scoreLoc) {
-      case AB_LEFT:
-        return getScoringLocBlue(ReefFace.AB, BranchSide.LEFT);
-      case CD_LEFT:
-        return getScoringLocBlue(ReefFace.CD, BranchSide.LEFT);
-      case EF_LEFT:
-        return getScoringLocBlue(ReefFace.EF, BranchSide.LEFT);
-      case GH_LEFT:
-        return getScoringLocBlue(ReefFace.GH, BranchSide.LEFT);
-      case IJ_LEFT:
-        return getScoringLocBlue(ReefFace.IJ, BranchSide.LEFT);
-      case KL_LEFT:
-        return getScoringLocBlue(ReefFace.KL, BranchSide.LEFT);
-      case AB_RIGHT:
-        return getScoringLocBlue(ReefFace.AB, BranchSide.RIGHT);
-      case CD_RIGHT:
-        return getScoringLocBlue(ReefFace.CD, BranchSide.RIGHT);
-      case EF_RIGHT:
-        return getScoringLocBlue(ReefFace.EF, BranchSide.RIGHT);
-      case GH_RIGHT:
-        return getScoringLocBlue(ReefFace.GH, BranchSide.RIGHT);
-      case IJ_RIGHT:
-        return getScoringLocBlue(ReefFace.IJ, BranchSide.RIGHT);
-      case KL_RIGHT:
-        return getScoringLocBlue(ReefFace.KL, BranchSide.RIGHT);
-      default:
-        return null;
-    }
-  }
-
-  public static Pose2d getScoringLocBlue(ReefFace face, BranchSide side) {
+  public static Pose2d getReefAprilTagPose(ReefFace face) {
     Pose3d tagPose;
     switch (face) {
       case AB:
@@ -139,16 +102,22 @@ public class FieldConstants {
       default:
         return null;
     }
-    return getReefScoringPoseWithOffset(tagPose, side);
+    return tagPose.toPose2d();
   }
 
-  private static Pose2d getReefScoringPoseWithOffset(Pose3d tagPose, BranchSide side) {
-    if (side == BranchSide.LEFT) {
-      return tagPose.toPose2d().transformBy(leftReefScoringTransform);
+  public static Pose2d getReefAprilTagPose(ScoringPose scoringPose) {
+    return getReefAprilTagPose(scoringPose.face);
+  }
+
+  public static Pose2d getReefScorePose(ScoringPose pose) {
+    if (pose.side == BranchSide.LEFT) {
+      return getReefAprilTagPose(pose).transformBy(leftReefScoringTransform);
     } else {
-      return tagPose.toPose2d().transformBy(rightReefScoringTransform);
+      return getReefAprilTagPose(pose).transformBy(rightReefScoringTransform);
     }
   }
+
+  
 
   public static CoralStation getNearestCoralStationBlue(Pose2d currPose) {
     // Left and right from driver station perspective
@@ -179,4 +148,35 @@ public class FieldConstants {
         return null;
     }
   }
+
+  // REMENANTS OF AN ATTEMPT OF SWITCHING TO MANUAL PATHS AT END
+// This is the location pathfinding will go to before switching to a manual path
+// public static Transform2d reefPathfindingOfset = new Transform2d(1, 0, new Rotation2d());
+  // public static HashMap<ScoringPose, PathPlannerPath> coralFinalAlignmentPaths = new HashMap<>();
+
+  // public static void initCoralFinalAlignmentPaths() {
+  //   for (ReefFace loc : ReefFace.values()) {
+  //     for (BranchSide side : BranchSide.values()) {
+  //       ScoringPose scoringId = new ScoringPose(loc, side);
+  //       Pose2d startPose = getReefAprilTagPose(scoringId).transformBy(reefPathfindingOfset);
+  //       Pose2d endPose = getReefScorePose(scoringId);
+
+  //       // TODO: Replace with actual constraints
+  //       PathConstraints constraints = PathConstraints.unlimitedConstraints(12);
+
+  //       PathPlannerPath path =
+  //           new PathPlannerPath(
+  //               PathPlannerPath.waypointsFromPoses(startPose, endPose),
+  //               constraints,
+  //               new IdealStartingState(3.3, endPose.getRotation()),
+  //               new GoalEndState(0, endPose.getRotation()));
+
+  //       coralFinalAlignmentPaths.put(scoringId, path);
+  //     }
+  //   }
+  // }
+
+  // public static Pose2d getReefPathfindingPose(ScoringPose pose) {
+  //   return getReefAprilTagPose(pose).transformBy(reefPathfindingOfset);
+  // }
 }
