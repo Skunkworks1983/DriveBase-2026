@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.FieldConstants.BranchSide;
-import frc.robot.util.FieldConstants.CoralScoreLocation;
 import frc.robot.util.FieldConstants.CoralStation;
 import frc.robot.util.FieldConstants.ReefFace;
+import frc.robot.util.FieldConstants.ScoringPose;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -37,19 +37,19 @@ public class PathFinding {
   }
 
   /**
+   * Pathfinds to the reef pathfinding pose, then switches to manual alignment
+   *
    * @param face The face of the reef to score on
    * @param branch The reef branch to score on
    * @return A command that pathfinds to the specified reef scoring pose
    */
-  public static Command pathfindToReefScorePose(ReefFace face, BranchSide branch) {
-    Pose2d targetPose = FieldConstants.getScoringLocBlue(face, branch);
+  public static Command pathfindToReefScorePose(ScoringPose pose) {
+    Pose2d targetPose = FieldConstants.getReefScorePose(pose);
     return pathfindToPose2d(targetPose);
-  }
 
-  public static Command pathfindToReefScorePose(CoralScoreLocation scoreLoc) {
-    Pose2d targetPose = FieldConstants.getScoringLocBlue(scoreLoc);
-
-    return pathfindToPose2d(targetPose);
+    // PathPlannerPath finalAlignment = FieldConstants.coralFinalAlignmentPaths.get(pose);
+    // return AutoBuilder.pathfindThenFollowPath(
+    //     finalAlignment, PathFindingConstants.buildPathConstraints());
   }
 
   /**
@@ -63,7 +63,7 @@ public class PathFinding {
     return Commands.defer(
         () ->
             pathfindToReefScorePose(
-                face, isLeft.getAsBoolean() ? BranchSide.LEFT : BranchSide.RIGHT),
+                new ScoringPose(face, isLeft.getAsBoolean() ? BranchSide.LEFT : BranchSide.RIGHT)),
         Set.of(drive));
   }
 
