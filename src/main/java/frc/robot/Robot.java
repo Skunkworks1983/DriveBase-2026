@@ -8,6 +8,8 @@
 package frc.robot;
 
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.Mode;
@@ -72,6 +74,10 @@ public class Robot extends LoggedRobot {
     PortForwarder.add(5817, "172.29.1.1", 5807);
     PortForwarder.add(5818, "172.29.1.1", 5808);
     PortForwarder.add(5819, "172.29.1.1", 5809);
+    
+    // Connect to Elastic
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
 
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
