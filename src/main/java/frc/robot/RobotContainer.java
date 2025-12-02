@@ -36,7 +36,6 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import frc.robot.util.FieldConstants;
 import frc.robot.util.FieldConstants.BranchSide;
 import frc.robot.util.FieldConstants.ReefFace;
 import frc.robot.util.FieldConstants.ScoringPose;

@@ -48,7 +48,7 @@ public class CustomAutoFactory {
     FieldConstants.getAllScoringPoses()
         .forEach((pose) -> scoreChoser.addOption(pose.toString(), pose));
     ScoringPose defaultPose = new ScoringPose(ReefFace.AB, BranchSide.LEFT);
-        scoreChoser.addDefaultOption(defaultPose.toString(), defaultPose);
+    scoreChoser.addDefaultOption(defaultPose.toString(), defaultPose);
   }
 
   public static Command getCustomAuto(Drive drive) {

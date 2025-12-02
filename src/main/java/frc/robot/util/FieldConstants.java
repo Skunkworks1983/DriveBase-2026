@@ -1,9 +1,5 @@
 package frc.robot.util;
 
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.IdealStartingState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,10 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.TreeSet;
 
 public class FieldConstants {
   /** Reef face following Game Manual labeling */
@@ -56,7 +50,9 @@ public class FieldConstants {
   }
 
   public static HashSet<ScoringPose> getAllScoringPoses() {
-    HashSet<ScoringPose> scoringPoses = new LinkedHashSet<ScoringPose>(); // Using a linked set to keep items ordered for auto select display
+    HashSet<ScoringPose> scoringPoses =
+        new LinkedHashSet<
+            ScoringPose>(); // Using a linked set to keep items ordered for auto select display
     for (ReefFace face : ReefFace.values()) {
       scoringPoses.add(new ScoringPose(face, BranchSide.LEFT));
       scoringPoses.add(new ScoringPose(face, BranchSide.RIGHT));
@@ -72,7 +68,7 @@ public class FieldConstants {
       new Transform2d(0.55, -0.165, new Rotation2d(Math.PI));
   public static Transform2d rightReefScoringTransform =
       new Transform2d(0.55, 0.165, new Rotation2d(Math.PI));
-  
+
   public static Transform2d coralStationCollectPathfindTransform =
       new Transform2d(1, 0, new Rotation2d());
   public static Transform2d coralStationCollectTransform =
@@ -117,8 +113,6 @@ public class FieldConstants {
     }
   }
 
-  
-
   public static CoralStation getNearestCoralStationBlue(Pose2d currPose) {
     // Left and right from driver station perspective
     Pose2d leftCoralStation = aprilTagLayout.getTagPose(13).get().toPose2d();
@@ -150,8 +144,8 @@ public class FieldConstants {
   }
 
   // REMENANTS OF AN ATTEMPT OF SWITCHING TO MANUAL PATHS AT END
-// This is the location pathfinding will go to before switching to a manual path
-// public static Transform2d reefPathfindingOfset = new Transform2d(1, 0, new Rotation2d());
+  // This is the location pathfinding will go to before switching to a manual path
+  // public static Transform2d reefPathfindingOfset = new Transform2d(1, 0, new Rotation2d());
   // public static HashMap<ScoringPose, PathPlannerPath> coralFinalAlignmentPaths = new HashMap<>();
 
   // public static void initCoralFinalAlignmentPaths() {
