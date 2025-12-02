@@ -12,11 +12,15 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -36,6 +40,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.AutoPreview;
 import frc.robot.util.FieldConstants.BranchSide;
 import frc.robot.util.FieldConstants.ReefFace;
 import org.ironmaple.simulation.SimulatedArena;
@@ -45,9 +50,12 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -65,8 +73,11 @@ public class RobotContainer {
 
   // Sim
   private SwerveDriveSimulation simulation = null;
+  private Field2d autoPreviewField = new Field2d();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     if (Constants.controlScheme == Constants.ControlScheme.OI) {
       leftJoystick = new Joystick(0);
@@ -82,18 +93,17 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
-                (pose) -> {});
+        drive = new Drive(
+            new GyroIOPigeon2(),
+            new ModuleIOTalonFX(TunerConstants.FrontLeft),
+            new ModuleIOTalonFX(TunerConstants.FrontRight),
+            new ModuleIOTalonFX(TunerConstants.BackLeft),
+            new ModuleIOTalonFX(TunerConstants.BackRight),
+            (pose) -> {
+            });
 
-        vision =
-            new Vision(
-                drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
+        vision = new Vision(
+            drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -116,44 +126,48 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        simulation =
-            new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+        simulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
 
         SimulatedArena.getInstance().addDriveTrainSimulation(simulation);
-        drive =
-            new Drive(
-                new GyroIOSim(simulation.getGyroSimulation()),
-                new ModuleIOTalonFXSim(TunerConstants.FrontLeft, simulation.getModules()[0]),
-                new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
-                new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
-                new ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.getModules()[3]),
-                simulation::setSimulationWorldPose);
+        drive = new Drive(
+            new GyroIOSim(simulation.getGyroSimulation()),
+            new ModuleIOTalonFXSim(TunerConstants.FrontLeft, simulation.getModules()[0]),
+            new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
+            new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
+            new ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.getModules()[3]),
+            simulation::setSimulationWorldPose);
 
-        vision =
-            new Vision(
-                drive,
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name,
-                    VisionConstants.robotToCamera0,
-                    simulation::getSimulatedDriveTrainPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name,
-                    VisionConstants.robotToCamera1,
-                    simulation::getSimulatedDriveTrainPose));
+        vision = new Vision(
+            drive,
+            new VisionIOPhotonVisionSim(
+                VisionConstants.camera0Name,
+                VisionConstants.robotToCamera0,
+                simulation::getSimulatedDriveTrainPose),
+            new VisionIOPhotonVisionSim(
+                VisionConstants.camera1Name,
+                VisionConstants.robotToCamera1,
+                simulation::getSimulatedDriveTrainPose));
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                (pose) -> {});
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            (pose) -> {
+            });
 
-        vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
+        vision = new Vision(drive, new VisionIO() {
+        }, new VisionIO() {
+        });
         break;
     }
     CustomAutoFactory.registerCustomAutoChoices();
@@ -164,6 +178,10 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+    // Add preview of autos to dashboard
+    AutoPreview.initAutoPreview(autoChooser.getSendableChooser(), autoPreviewField);
+    SmartDashboard.putData(autoPreviewField);
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -180,34 +198,26 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption("Sim Physics Test", new PathPlannerAuto("SimPhysTest"));
-    autoChooser.addOption("Path Find Test Red", new PathPlannerAuto("PathFindTest"));
     autoChooser.addOption("Custom Auto", CustomAutoFactory.getCustomAuto(drive));
 
-    LoggedNetworkBoolean reefPathFindIsLeft =
-        new LoggedNetworkBoolean("Pathfinding/Reef Target Branch Is Left?", true);
-    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
-        .add(
+    LoggedNetworkBoolean reefPathFindIsLeft = new LoggedNetworkBoolean("Pathfinding/Reef Target Branch Is Left?", true);
+
+    SmartDashboard.putData(
             "Pathfinding/Score AB",
             PathFinding.pathfindToReefScorePose(ReefFace.AB, reefPathFindIsLeft::get, drive));
-    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
-        .add(
+    SmartDashboard.putData(
             "Pathfinding/Score CD",
             PathFinding.pathfindToReefScorePose(ReefFace.CD, reefPathFindIsLeft::get, drive));
-    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
-        .add(
+    SmartDashboard.putData(
             "Pathfinding/Score EF",
             PathFinding.pathfindToReefScorePose(ReefFace.EF, reefPathFindIsLeft::get, drive));
-    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
-        .add(
+    SmartDashboard.putData(
             "Pathfinding/Score GH",
             PathFinding.pathfindToReefScorePose(ReefFace.GH, reefPathFindIsLeft::get, drive));
-    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
-        .add(
+    SmartDashboard.putData(
             "Pathfinding/Score IJ",
             PathFinding.pathfindToReefScorePose(ReefFace.IJ, reefPathFindIsLeft::get, drive));
-    Shuffleboard.getTab(Shuffleboard.kBaseTableName)
-        .add(
+    SmartDashboard.putData(
             "Pathfinding/Score KL",
             PathFinding.pathfindToReefScorePose(ReefFace.KL, reefPathFindIsLeft::get, drive));
     // Configure the button bindings
@@ -215,9 +225,11 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
@@ -278,24 +290,30 @@ public class RobotContainer {
   /**
    * This is called at robot initialization during sim
    *
-   * <p>It temporarily positions the robot (See {@link #resetSimRobotPose} for actual initial robot
+   * <p>
+   * It temporarily positions the robot (See {@link #resetSimRobotPose} for actual
+   * initial robot
    * positioning) and resets the {@link SimulatedArena} to standard field state
    */
   public void resetSimulationField() {
-    if (Constants.currentMode != Constants.Mode.SIM) return;
+    if (Constants.currentMode != Constants.Mode.SIM)
+      return;
 
     SimulatedArena.getInstance().resetFieldForAuto();
   }
 
   /**
-   * This method is called during the periodic cycle during sim. The simulation state is updated and
+   * This method is called during the periodic cycle during sim. The simulation
+   * state is updated and
    * game pieces positions are logged for AdvantageScope visualization
    *
-   * @see <a href= "https://shenzhen-robotics-alliance.github.io/maple-sim/reefscape/">MapleSim
-   *     docs</a> for information on how to display game pieces in AdvantageScope
+   * @see <a href=
+   *      "https://shenzhen-robotics-alliance.github.io/maple-sim/reefscape/">MapleSim
+   *      docs</a> for information on how to display game pieces in AdvantageScope
    */
   public void updateSimulation() {
-    if (Constants.currentMode != Constants.Mode.SIM) return;
+    if (Constants.currentMode != Constants.Mode.SIM)
+      return;
 
     SimulatedArena.getInstance().simulationPeriodic();
     Logger.recordOutput("FieldSimulation/RobotPosition", simulation.getSimulatedDriveTrainPose());
@@ -306,10 +324,13 @@ public class RobotContainer {
   }
 
   /**
-   * This method is called periodically during disabled so that if the alliance is changed it is
+   * This method is called periodically during disabled so that if the alliance is
+   * changed it is
    * registered
    *
-   * <p>This method sets the {@link #simulation} world pose to mirrored positions based on alliance
+   * <p>
+   * This method sets the {@link #simulation} world pose to mirrored positions
+   * based on alliance
    * color
    */
   public void resetSimRobotPose() {
