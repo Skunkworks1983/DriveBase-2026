@@ -18,19 +18,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -77,69 +69,71 @@ public class RobotContainer {
       rightJoystick = null;
     }
     switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
-        // a CANcoder
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
-                (pose) -> {});
+        // case REAL:
+        //   // Real robot, instantiate hardware IO implementations
+        //   // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
+        //   // a CANcoder
+        //   drive =
+        //       new Drive(
+        //           new GyroIOPigeon2(),
+        //           new ModuleIOTalonFX(TunerConstants.FrontLeft),
+        //           new ModuleIOTalonFX(TunerConstants.FrontRight),
+        //           new ModuleIOTalonFX(TunerConstants.BackLeft),
+        //           new ModuleIOTalonFX(TunerConstants.BackRight),
+        //           (pose) -> {});
 
-        vision =
-            new Vision(
-                drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
+        //   vision =
+        //       new Vision(
+        //           drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
 
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
-        // implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
-        // swerve
-        // template) can be freely intermixed to support alternative hardware
-        // arrangements.
-        // Please see the AdvantageKit template documentation for more information:
+        //   // The ModuleIOTalonFXS implementation provides an example implementation for
+        //   // TalonFXS controller connected to a CANdi with a PWM encoder. The
+        //   // implementations
+        //   // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
+        //   // swerve
+        //   // template) can be freely intermixed to support alternative hardware
+        //   // arrangements.
+        //   // Please see the AdvantageKit template documentation for more information:
+        //   //
         // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // drive =
-        // new Drive(
-        // new GyroIOPigeon2(),
-        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        // new ModuleIOTalonFXS(TunerConstants.BackRight));
-        break;
+        //   //
+        //   // drive =
+        //   // new Drive(
+        //   // new GyroIOPigeon2(),
+        //   // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
+        //   // new ModuleIOTalonFXS(TunerConstants.FrontRight),
+        //   // new ModuleIOTalonFXS(TunerConstants.BackLeft),
+        //   // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        //   break;
 
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        simulation =
-            new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+        // case SIM:
+        //   // Sim robot, instantiate physics sim IO implementations
+        //   simulation =
+        //       new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new
+        // Rotation2d()));
 
-        SimulatedArena.getInstance().addDriveTrainSimulation(simulation);
-        drive =
-            new Drive(
-                new GyroIOSim(simulation.getGyroSimulation()),
-                new ModuleIOTalonFXSim(TunerConstants.FrontLeft, simulation.getModules()[0]),
-                new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
-                new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
-                new ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.getModules()[3]),
-                simulation::setSimulationWorldPose);
+        //   SimulatedArena.getInstance().addDriveTrainSimulation(simulation);
+        //   drive =
+        //       new Drive(
+        //           new GyroIOSim(simulation.getGyroSimulation()),
+        //           new ModuleIOTalonFXSim(TunerConstants.FrontLeft, simulation.getModules()[0]),
+        //           new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
+        //           new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
+        //           new ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.getModules()[3]),
+        //           simulation::setSimulationWorldPose);
 
-        vision =
-            new Vision(
-                drive,
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name,
-                    VisionConstants.robotToCamera0,
-                    simulation::getSimulatedDriveTrainPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name,
-                    VisionConstants.robotToCamera1,
-                    simulation::getSimulatedDriveTrainPose));
-        break;
+        //   vision =
+        //       new Vision(
+        //           drive,
+        //           new VisionIOPhotonVisionSim(
+        //               VisionConstants.camera0Name,
+        //               VisionConstants.robotToCamera0,
+        //               simulation::getSimulatedDriveTrainPose),
+        //           new VisionIOPhotonVisionSim(
+        //               VisionConstants.camera1Name,
+        //               VisionConstants.robotToCamera1,
+        //               simulation::getSimulatedDriveTrainPose));
+        //   break;
 
       default:
         // Replayed robot, disable IO implementations

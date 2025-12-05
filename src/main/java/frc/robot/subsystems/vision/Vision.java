@@ -142,11 +142,10 @@ public class Vision extends SubsystemBase {
       }
 
       // Log camera datadata
-      for(int i = 0; i < tagPoses.size(); i++){
+      for (int i = 0; i < tagPoses.size(); i++) {}
 
-      }
-      
-      Logger.recordOutput("Vision/Camera" + Integer.toString(cameraIndex) + "/Distance", 
+      Logger.recordOutput(
+          "Vision/Camera" + Integer.toString(cameraIndex) + "/Distance",
           distancePoses.toArray(new Pose3d[distancePoses.size()]));
       Logger.recordOutput(
           "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",

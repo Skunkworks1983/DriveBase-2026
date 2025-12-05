@@ -7,10 +7,14 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.configs.AudioConfigs;
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.Mode;
+import frc.robot.generated.TunerConstants;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -161,6 +165,59 @@ public class Robot extends LoggedRobot {
     // this line or comment it out.
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
+    }
+    AudioConfigs audioConfigs = new AudioConfigs().withAllowMusicDurDisable(true);
+    // Swerve Motors
+    TalonFX instrument1 = new TalonFX(TunerConstants.FrontLeft.DriveMotorId);
+    instrument1.getConfigurator().apply(audioConfigs);
+    TalonFX instrument2 = new TalonFX(TunerConstants.FrontLeft.SteerMotorId);
+    instrument2.getConfigurator().apply(audioConfigs);
+    TalonFX instrument3 = new TalonFX(TunerConstants.FrontRight.DriveMotorId);
+    instrument3.getConfigurator().apply(audioConfigs);
+    TalonFX instrument4 = new TalonFX(TunerConstants.FrontRight.SteerMotorId);
+    instrument4.getConfigurator().apply(audioConfigs);
+    TalonFX instrument5 = new TalonFX(TunerConstants.BackLeft.DriveMotorId);
+    instrument5.getConfigurator().apply(audioConfigs);
+    TalonFX instrument6 = new TalonFX(TunerConstants.BackLeft.SteerMotorId);
+    instrument6.getConfigurator().apply(audioConfigs);
+    TalonFX instrument7 = new TalonFX(TunerConstants.BackRight.DriveMotorId);
+    instrument7.getConfigurator().apply(audioConfigs);
+    TalonFX instrument8 = new TalonFX(TunerConstants.BackRight.SteerMotorId);
+    instrument8.getConfigurator().apply(audioConfigs);
+
+    // Motors from 2025 bot
+    TalonFX intrument9 = new TalonFX(40); // Climb
+    intrument9.getConfigurator().apply(audioConfigs);
+    TalonFX intrument10 = new TalonFX(42); // Collector
+    intrument10.getConfigurator().apply(audioConfigs);
+    TalonFX intrument11 = new TalonFX(11); // Collector
+    intrument11.getConfigurator().apply(audioConfigs);
+    TalonFX intrument12 = new TalonFX(27); // Elevator
+    intrument12.getConfigurator().apply(audioConfigs);
+    TalonFX intrument13 = new TalonFX(28); // Elevator
+    intrument13.getConfigurator().apply(audioConfigs);
+    TalonFX intrument14 = new TalonFX(4); // Wrist
+    intrument14.getConfigurator().apply(audioConfigs);
+
+    Orchestra orchestra = new Orchestra();
+
+    orchestra.addInstrument(instrument1);
+    orchestra.addInstrument(instrument2);
+    orchestra.addInstrument(instrument3);
+    orchestra.addInstrument(instrument4);
+    orchestra.addInstrument(instrument5);
+    orchestra.addInstrument(instrument6);
+    orchestra.addInstrument(instrument7);
+    orchestra.addInstrument(instrument8);
+    orchestra.addInstrument(intrument9);
+    orchestra.addInstrument(intrument10);
+    orchestra.addInstrument(intrument11);
+    orchestra.addInstrument(intrument12);
+    orchestra.addInstrument(intrument13);
+    orchestra.addInstrument(intrument14);
+    var status = orchestra.loadMusic("jinglebells.chrp");
+    if (status.isOK()) {
+      orchestra.play();
     }
   }
 
