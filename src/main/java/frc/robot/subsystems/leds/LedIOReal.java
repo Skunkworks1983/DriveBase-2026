@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import frc.robot.subsystems.leds.Leds.LEDStates;
 
 public class LedIOReal implements LedIO {
-  public final I2C ledController = new I2C(Port.kOnboard, LedConstants.psocI2CAdress);
+  public final I2C ledController = new I2C(Port.kOnboard, LedConstants.ledControllerI2CAdress);
   private boolean sendSuccess = false;
 
   /**
@@ -36,7 +36,7 @@ public class LedIOReal implements LedIO {
     int command = getLEDCommand(state) | LedConstants.bitmask; // Default bit mask 0x00 (none)
     byte[] i2cData = new byte[] {(byte) command};
 
-    sendSuccess = !ledController.writeBulk(i2cData, 1);
+    sendSuccess = !ledController.writeBulk(i2cData, 1); // write bulk returns if the send is aborted; this is inverted so logging displays the correct color to indicate a failure
   }
 
   @Override
