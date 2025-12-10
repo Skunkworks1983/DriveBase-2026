@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -167,5 +168,18 @@ public class VisionIOLimelight implements VisionIO {
             Units.degreesToRadians(rawLLArray[3]),
             Units.degreesToRadians(rawLLArray[4]),
             Units.degreesToRadians(rawLLArray[5])));
+  }
+
+  @Override
+  public void resetCameraIMU(Pose2d pose) {
+    // Put the internal IMU into seed mode
+    imuModePublisher.accept(1);
+    orientationPublisher.accept(
+        new double[] {pose.getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0});
+    // Force a flush to ensure that the IMU gets set to seed mode before getting set back to
+    // intenral mode
+    NetworkTableInstance.getDefault().flush();
+    // Put the internal IMU into external IMU assisted convergance mode
+    imuModePublisher.accept(4);
   }
 }
