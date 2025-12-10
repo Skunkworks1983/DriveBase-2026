@@ -86,7 +86,6 @@
             "/RealOutputs/SwerveChassisSpeeds",
             "/RealOutputs/SwerveStates/Measured",
             "/RealOutputs/SwerveChassisSpeeds/Measured",
-            "/Drive",
             "/Drive/Module2",
             "/Drive/Module1",
             "/Drive/Gyro",
@@ -102,11 +101,25 @@
             "/RealOutputs/LoggedRobot",
             "/RealOutputs/Odometry",
             "/Drive/Module3",
-            "/Drive/Module0"
+            "/Drive/Module0",
+            "/RealOutputs/Vision/Summary/RobotPoses",
+            "/RealOutputs/Vision/Summary/RobotPoses/0",
+            "/RealOutputs/Vision/Summary/RobotPoses/0/rotation",
+            "/RealOutputs/Vision/Summary/RobotPoses/0/translation",
+            "/RealOutputs/Vision/Summary/RobotPoses/1",
+            "/RealOutputs/Vision/Summary/RobotPoses/1/rotation",
+            "/RealOutputs/Vision/Summary/RobotPoses/1/translation",
+            "/RealOutputs/Vision/Summary/TagPoses",
+            "/RealOutputs/Vision/Summary/RobotPosesRejected",
+            "/RealOutputs/Vision/Summary/RobotPosesAccepted",
+            "/RealOutputs/Vision/Summary/RobotPosesAccepted/1",
+            "/RealOutputs/Vision/Summary/RobotPosesAccepted/0",
+            "/RealOutputs/Vision/Summary/RobotPosesAccepted/0/translation",
+            "/RealOutputs/Vision/Summary/RobotPosesAccepted/1/translation"
           ]
         },
         "tabs": {
-          "selected": 4,
+          "selected": 5,
           "tabs": [
             {
               "type": 0,
@@ -332,7 +345,17 @@
                     }
                   }
                 ],
-                "discreteSources": [],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted/length",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  }
+                ],
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -438,7 +461,17 @@
                     }
                   }
                 ],
-                "discreteSources": [],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted/length",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  }
+                ],
                 "leftLockedRange": null,
                 "rightLockedRange": null,
                 "leftUnitConversion": {
@@ -453,6 +486,102 @@
                 "rightFilter": 0
               },
               "controllerUUID": "3giewjaai3zozlbok08uuyy0gsy9tvzr",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Odometry-Camera Fusion",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Odometry/Robot/translation/x",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted/0/translation/x",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted/1/translation/x",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Odometry/Robot/translation/y",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted/0/translation/y",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted/1/translation/y",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted/length",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "znheiirujv3idywl581y2pkkrpbtzx28",
               "renderer": null,
               "controlsHeight": 200
             },
