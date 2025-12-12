@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Orchestra;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,9 +16,13 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.CollectorCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.collector.Collector;
+import frc.robot.subsystems.collector.CollectorIO;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -47,10 +50,12 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final Collector collector;
 
   // Controller
   private final Joystick leftJoystick;
   private final Joystick rightJoystick;
+  private final Joystick buttonJoystick;
 
   /**
    * Xbox Controller for simulation.
@@ -71,11 +76,13 @@ public class RobotContainer {
     if (Constants.controlScheme == Constants.ControlScheme.OI) {
       leftJoystick = new Joystick(0);
       rightJoystick = new Joystick(1);
+      buttonJoystick = new Joystick(2);
       xboxController = null;
     } else {
       xboxController = new XboxController(0);
       leftJoystick = null;
       rightJoystick = null;
+      buttonJoystick = null;
     }
     switch (Constants.currentMode) {
       case REAL:
@@ -94,6 +101,8 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
+
+        collector = new Collector(new CollectorIO() {});
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -205,6 +214,10 @@ public class RobotContainer {
               () -> -xboxController.getLeftX(),
               () -> -xboxController.getRightX()));
     }
+
+    JoystickButton collectorIntake = new JoystickButton(buttonJoystick, 11);
+    collectorIntake.whileTrue(new CollectorCommand(5));
+
     Logger.recordOutput("Control Scheme", Constants.controlScheme);
 
     // Lock to 0° when A button is held
