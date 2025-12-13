@@ -1,11 +1,13 @@
 package frc.robot.subsystems.leds;
 
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import frc.robot.subsystems.leds.Leds.LEDStates;
 
 public class LedIOReal implements LedIO {
-  public final I2C ledController = new I2C(Port.kOnboard, LedConstants.ledControllerI2CAdress);
+  private final DigitalOutput ledBit0 = new DigitalOutput(LedConstants.ledControllerBit0Port);
+  private final DigitalOutput ledBit1 = new DigitalOutput(LedConstants.ledControllerBit1Port);
+  private final DigitalOutput ledBit2 = new DigitalOutput(LedConstants.ledControllerBit2Port);
+  private final DigitalOutput ledBit3 = new DigitalOutput(LedConstants.ledControllerBit3Port);
   private boolean sendSuccess = false;
 
   /**
@@ -17,26 +19,32 @@ public class LedIOReal implements LedIO {
   private int getLEDCommand(LEDStates state) {
     switch (state) {
       case AUTO:
-        return (int) LedConstants.autoLEDCommand.get();
+        return LedConstants.autoLEDCommand;
       case HAS_ALGAE:
-        return (int) LedConstants.hasAlgaeLEDCommand.get();
+        return LedConstants.hasAlgaeLEDCommand;
       case HAS_CORAL:
-        return (int) LedConstants.hasCoralLEDCommand.get();
+        return LedConstants.hasCoralLEDCommand;
       case PRE_MATCH:
-        return (int) LedConstants.preMatchLEDCommand.get();
+        return LedConstants.preMatchLEDCommand;
       case CLIMBING:
-        return (int) LedConstants.climbingLEDCommand.get();
+        return LedConstants.climbingLEDCommand;
       default:
-        return (int) LedConstants.disconnectedLEDCommand.get();
+        return LedConstants.disconnectedLEDCommand;
     }
   }
 
   @Override
   public void setState(LEDStates state) {
-    int command = getLEDCommand(state) | LedConstants.bitmask; // Default bit mask 0x00 (none)
-    byte[] i2cData = new byte[] {(byte) command};
+    int command = getLEDCommand(state);
 
-    sendSuccess = !ledController.writeBulk(i2cData, 1); // write bulk returns if the send is aborted; this is inverted so logging displays the correct color to indicate a failure
+    // Invert the command bc the PSOC inverts it back
+    int invertedCommand = LedConstants.numLedCommands - command;
+
+    // Converting the command int to binary for the DIO
+    ledBit0.set((invertedCommand & 1) != 0);
+    ledBit1.set((invertedCommand & 2) != 0);
+    ledBit2.set((invertedCommand & 4) != 0);
+    ledBit3.set((invertedCommand & 8) != 0);
   }
 
   @Override
