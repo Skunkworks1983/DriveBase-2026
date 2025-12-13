@@ -11,10 +11,7 @@ public class LedIOReal implements LedIO {
   private boolean sendSuccess = false;
 
   /**
-   * @implNote Gets from the tunable number network table a hex representing an led state (e.g.
-   *     0xF0)
-   * @param state LED state to get hex command for
-   * @return Hex literal from logged tunable numbers
+   * Returns an integer id representing an LED DIO command
    */
   private int getLEDCommand(LEDStates state) {
     switch (state) {
