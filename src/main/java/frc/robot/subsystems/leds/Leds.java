@@ -13,7 +13,8 @@ public class Leds extends SubsystemBase {
     HAS_ALGAE,
     AUTO,
     PRE_MATCH,
-    DISCONNECTED
+    DISCONNECTED,
+    TELEOP
   }
 
   public Leds(LedIO io) {
