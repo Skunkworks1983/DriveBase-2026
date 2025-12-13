@@ -10,29 +10,11 @@ public class LedIOReal implements LedIO {
   private final DigitalOutput ledBit3 = new DigitalOutput(LedConstants.ledControllerBit3Port);
   private boolean sendSuccess = false;
 
-  /**
-   * Returns an integer id representing an LED DIO command
-   */
-  private int getLEDCommand(LEDStates state) {
-    switch (state) {
-      case AUTO:
-        return LedConstants.autoLEDCommand;
-      case HAS_ALGAE:
-        return LedConstants.hasAlgaeLEDCommand;
-      case HAS_CORAL:
-        return LedConstants.hasCoralLEDCommand;
-      case PRE_MATCH:
-        return LedConstants.preMatchLEDCommand;
-      case CLIMBING:
-        return LedConstants.climbingLEDCommand;
-      default:
-        return LedConstants.disconnectedLEDCommand;
-    }
-  }
 
   @Override
   public void setState(LEDStates state) {
-    int command = getLEDCommand(state);
+    if (!LedConstants.ledCommands.containsKey(state)) return;
+    int command = LedConstants.ledCommands.get(state);
 
     // Invert the command bc the PSOC inverts it back
     int invertedCommand = LedConstants.numLedCommands - command;

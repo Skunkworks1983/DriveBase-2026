@@ -1,5 +1,10 @@
 package frc.robot.subsystems.leds;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
+import frc.robot.subsystems.leds.Leds.LEDStates;
+
 public class LedConstants {
   // PSOC LED Codes:
   // 0 off
@@ -19,14 +24,6 @@ public class LedConstants {
   // 14 cylon / oposite rings
   // 15 rgb chase
 
-  public static final int climbingLEDCommand = 4;
-  public static final int hasCoralLEDCommand = 6;
-  public static final int hasAlgaeLEDCommand = 10;
-  public static final int autoLEDCommand = 3;
-  public static final int preMatchLEDCommand = 15;
-  public static final int disconnectedLEDCommand = 0;
-  public static final int teleopLEDCommand = 5;
-
   // TODO: SET ACTUAL
   public static final int ledControllerBit0Port = 0;
   public static final int ledControllerBit1Port = 1;
@@ -34,4 +31,19 @@ public class LedConstants {
   public static final int ledControllerBit3Port = 3;
 
   public static final int numLedCommands = 15;
+
+
+  // Hashmap tying each led state to an integer representing its command
+  public static HashMap<LEDStates, Integer> ledCommands = new HashMap<>(){
+    {
+        put(LEDStates.DISCONNECTED, 0);
+        put(LEDStates.PRE_MATCH, 15);
+        put(LEDStates.TELEOP, 10);
+        put(LEDStates.AUTO, 3);
+        put(LEDStates.HAS_ALGAE, 4);
+        put(LEDStates.HAS_CORAL, 5);
+        put(LEDStates.CLIMBING, 6);
+
+    }
+  };
 }
