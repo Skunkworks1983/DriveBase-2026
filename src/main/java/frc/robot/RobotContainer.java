@@ -194,7 +194,7 @@ public class RobotContainer {
               drive,
               () -> -leftJoystick.getY(), // -X (used to be)
               () -> -leftJoystick.getX(), // -Y (used to be)
-              () -> rightJoystick.getX()));
+              () -> rightJoystick.getX())); // Confirm if negitive or not
     } else {
 
       drive.setDefaultCommand(
