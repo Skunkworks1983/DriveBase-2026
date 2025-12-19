@@ -22,7 +22,7 @@ import frc.robot.commands.CollectorCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.collector.Collector;
-import frc.robot.subsystems.collector.CollectorIO;
+import frc.robot.subsystems.collector.CollectorIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -51,6 +51,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Collector collector;
+  private final CollectorIOTalonFX collectorIOTalonFX;
 
   // Controller
   private final Joystick leftJoystick;
@@ -73,6 +74,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    collectorIOTalonFX = new CollectorIOTalonFX();
+    collector = new Collector(collectorIOTalonFX);
     if (Constants.controlScheme == Constants.ControlScheme.OI) {
       leftJoystick = new Joystick(0);
       rightJoystick = new Joystick(1);
@@ -101,8 +104,6 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
-
-        collector = new Collector(new CollectorIO() {});
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -215,8 +216,8 @@ public class RobotContainer {
               () -> -xboxController.getRightX()));
     }
 
-    JoystickButton collectorIntake = new JoystickButton(buttonJoystick, 11);
-    collectorIntake.whileTrue(new CollectorCommand(5));
+    JoystickButton collectorIntake = new JoystickButton(buttonJoystick, 5);
+    collectorIntake.whileTrue(new CollectorCommand(collector, .5));
 
     Logger.recordOutput("Control Scheme", Constants.controlScheme);
 
