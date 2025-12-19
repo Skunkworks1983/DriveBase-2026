@@ -7,9 +7,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.Mode;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -45,32 +45,6 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("GitDirty", "Unknown");
         break;
     }
-
-    // (robotIP):5801 will now point to a Limelight3A's (id 0) web interface stream:
-    // (robotIP):5800 will now point to a Limelight3A's (id 0) video stream:
-    PortForwarder.add(5800, "172.29.0.1", 5800);
-    PortForwarder.add(5801, "172.29.0.1", 5801);
-    PortForwarder.add(5802, "172.29.0.1", 5802);
-    PortForwarder.add(5803, "172.29.0.1", 5803);
-    PortForwarder.add(5804, "172.29.0.1", 5804);
-    PortForwarder.add(5805, "172.29.0.1", 5805);
-    PortForwarder.add(5806, "172.29.0.1", 5806);
-    PortForwarder.add(5807, "172.29.0.1", 5807);
-    PortForwarder.add(5808, "172.29.0.1", 5808);
-    PortForwarder.add(5809, "172.29.0.1", 5809);
-
-    // (robotIP):5811 will now point to a Limelight3A's (id 1) web interface stream:
-    // (robotIP):5810 will now point to a Limelight3A's (id 1) video stream:
-    PortForwarder.add(5810, "172.29.1.1", 5800);
-    PortForwarder.add(5811, "172.29.1.1", 5801);
-    PortForwarder.add(5812, "172.29.1.1", 5802);
-    PortForwarder.add(5813, "172.29.1.1", 5803);
-    PortForwarder.add(5814, "172.29.1.1", 5804);
-    PortForwarder.add(5815, "172.29.1.1", 5805);
-    PortForwarder.add(5816, "172.29.1.1", 5806);
-    PortForwarder.add(5817, "172.29.1.1", 5807);
-    PortForwarder.add(5818, "172.29.1.1", 5808);
-    PortForwarder.add(5819, "172.29.1.1", 5809);
 
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
@@ -122,11 +96,19 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    if (Constants.currentMode == Mode.SIM) {
+      robotContainer.resetSimulationField();
+    }
+  }
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    if (Constants.currentMode == Mode.SIM) {
+      robotContainer.resetSimRobotPose();
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -176,5 +158,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    robotContainer.updateSimulation();
+  }
 }
