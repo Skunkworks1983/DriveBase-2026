@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.auto.CustomAutoFactory;
 import frc.robot.auto.PathFinding;
+import frc.robot.auto.TestPathCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -226,6 +227,7 @@ public class RobotContainer {
     SmartDashboard.putData(
         "Pathfinding/Score KL",
         PathFinding.pathfindToReefScorePose(ReefFace.KL, reefPathFindIsLeft::get, drive));
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -335,5 +337,9 @@ public class RobotContainer {
     } else {
       simulation.setSimulationWorldPose(new Pose2d(10, 1.5, new Rotation2d()));
     }
+  }
+
+  public void testInit() {
+    TestPathCommands.publishTestPaths(drive);
   }
 }
