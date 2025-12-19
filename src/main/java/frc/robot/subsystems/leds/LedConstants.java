@@ -1,9 +1,7 @@
 package frc.robot.subsystems.leds;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import frc.robot.subsystems.leds.Leds.LEDStates;
+import java.util.HashMap;
 
 public class LedConstants {
   // PSOC LED Codes:
@@ -32,18 +30,17 @@ public class LedConstants {
 
   public static final int numLedCommands = 15;
 
-
   // Hashmap tying each led state to an integer representing its command
-  public static HashMap<LEDStates, Integer> ledCommands = new HashMap<>(){
-    {
-        put(LEDStates.DISCONNECTED, 0);
-        put(LEDStates.PRE_MATCH, 15);
-        put(LEDStates.TELEOP, 10);
-        put(LEDStates.AUTO, 3);
-        put(LEDStates.HAS_ALGAE, 4);
-        put(LEDStates.HAS_CORAL, 5);
-        put(LEDStates.CLIMBING, 6);
-
-    }
-  };
+  public static HashMap<LEDStates, Integer> ledCommands =
+      new HashMap<>() {
+        {
+          put(LEDStates.DISCONNECTED, 0);
+          put(LEDStates.PRE_MATCH, 15);
+          put(LEDStates.TELEOP, 10);
+          put(LEDStates.AUTO, 3);
+          put(LEDStates.HAS_ALGAE, 4);
+          put(LEDStates.HAS_CORAL, 5);
+          put(LEDStates.CLIMBING, 6);
+        }
+      };
 }

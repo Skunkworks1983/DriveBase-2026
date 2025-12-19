@@ -10,7 +10,6 @@ public class LedIOReal implements LedIO {
   private final DigitalOutput ledBit3 = new DigitalOutput(LedConstants.ledControllerBit3Port);
   private boolean sendSuccess = false;
 
-
   @Override
   public void setState(LEDStates state) {
     if (!LedConstants.ledCommands.containsKey(state)) return;
