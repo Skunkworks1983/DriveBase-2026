@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -14,8 +15,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,12 +31,18 @@ import java.util.function.Supplier;
 public class VisionIOLimelight implements VisionIO {
   private final Supplier<Rotation2d> rotationSupplier;
   private final DoubleArrayPublisher orientationPublisher;
+  private final IntegerPublisher imuModePublisher;
 
   private final DoubleSubscriber latencySubscriber;
   private final DoubleSubscriber txSubscriber;
   private final DoubleSubscriber tySubscriber;
   private final DoubleArraySubscriber megatag1Subscriber;
   private final DoubleArraySubscriber megatag2Subscriber;
+
+  private final int SEED_IMU_WITH_ROBOT_IMU = 1;
+  private final int INTERNAL_IMU_WITH_EXTERNAL_IMU_ASSIST = 4;
+
+  private Trigger enableTrigger = new Trigger(() -> DriverStation.isEnabled());
 
   /**
    * Creates a new VisionIOLimelight.
@@ -43,17 +54,32 @@ public class VisionIOLimelight implements VisionIO {
     var table = NetworkTableInstance.getDefault().getTable(name);
     this.rotationSupplier = rotationSupplier;
     orientationPublisher = table.getDoubleArrayTopic("robot_orientation_set").publish();
+    imuModePublisher = table.getIntegerTopic("imumode_set").publish();
+
     latencySubscriber = table.getDoubleTopic("tl").subscribe(0.0);
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
     tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
     megatag1Subscriber = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     megatag2Subscriber =
         table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+
+    // By default set the limelight to seed the internal IMU with robot IMU
+    imuModePublisher.accept(SEED_IMU_WITH_ROBOT_IMU);
+
+    // When robot is enabled use internal IMU with external IMU assisted convergence (the internal
+    // IMU should be seeded before enabled)
+    enableTrigger.onTrue(
+        new InstantCommand(() -> imuModePublisher.accept(INTERNAL_IMU_WITH_EXTERNAL_IMU_ASSIST)));
+
+    // When robot disables go back to seeding the internal IMU
+    enableTrigger.onFalse(
+        new InstantCommand(() -> imuModePublisher.accept(SEED_IMU_WITH_ROBOT_IMU)));
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    // Update connection status based on whether an update has been seen in the last 250ms
+    // Update connection status based on whether an update has been seen in the last
+    // 250ms
     inputs.connected =
         ((RobotController.getFPGATime() - latencySubscriber.getLastChange()) / 1000) < 250;
 
@@ -84,7 +110,8 @@ public class VisionIOLimelight implements VisionIO {
               // 3D pose estimate
               parsePose(rawSample.value),
 
-              // Ambiguity, using only the first tag because ambiguity isn't applicable for multitag
+              // Ambiguity, using only the first tag because ambiguity isn't applicable for
+              // multitag
               rawSample.value.length >= 18 ? rawSample.value[17] : 0.0,
 
               // Tag count
@@ -146,5 +173,18 @@ public class VisionIOLimelight implements VisionIO {
             Units.degreesToRadians(rawLLArray[3]),
             Units.degreesToRadians(rawLLArray[4]),
             Units.degreesToRadians(rawLLArray[5])));
+  }
+
+  @Override
+  public void resetCameraIMU(Pose2d pose) {
+    // Put the internal IMU into seed mode
+    imuModePublisher.accept(SEED_IMU_WITH_ROBOT_IMU);
+    orientationPublisher.accept(
+        new double[] {pose.getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0});
+    // Force a flush to ensure that the IMU gets set to seed mode before getting set back to
+    // intenral mode
+    NetworkTableInstance.getDefault().flush();
+    // Put the internal IMU into external IMU assisted convergance mode
+    imuModePublisher.accept(INTERNAL_IMU_WITH_EXTERNAL_IMU_ASSIST);
   }
 }

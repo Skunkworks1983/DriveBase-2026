@@ -179,6 +179,12 @@ public class Vision extends SubsystemBase {
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
   }
 
+  public void resetCameraIMU(Pose2d newPose) {
+    for (VisionIO camera : io) {
+      camera.resetCameraIMU(newPose);
+    }
+  }
+
   @FunctionalInterface
   public static interface VisionConsumer {
     public void accept(
