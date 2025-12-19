@@ -178,13 +178,13 @@ public class VisionIOLimelight implements VisionIO {
   @Override
   public void resetCameraIMU(Pose2d pose) {
     // Put the internal IMU into seed mode
-    imuModePublisher.accept(1);
+    imuModePublisher.accept(SEED_IMU_WITH_ROBOT_IMU);
     orientationPublisher.accept(
         new double[] {pose.getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0});
     // Force a flush to ensure that the IMU gets set to seed mode before getting set back to
     // intenral mode
     NetworkTableInstance.getDefault().flush();
     // Put the internal IMU into external IMU assisted convergance mode
-    imuModePublisher.accept(4);
+    imuModePublisher.accept(INTERNAL_IMU_WITH_EXTERNAL_IMU_ASSIST);
   }
 }
