@@ -88,11 +88,16 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight),
+                (pose) -> {},
                 (pose) -> {});
 
         vision =
             new Vision(
                 drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
+
+        // This is a solution to the vision-drive cross dependency issue that hurts my eys, but it
+        // does work
+        drive.setResetVisionIMUCallback((pose) -> vision.resetCameraIMU(pose));
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -126,7 +131,8 @@ public class RobotContainer {
                 new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
                 new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
                 new ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.getModules()[3]),
-                simulation::setSimulationWorldPose);
+                simulation::setSimulationWorldPose,
+                (pose) -> {});
 
         vision =
             new Vision(
@@ -150,6 +156,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
+                (pose) -> {},
                 (pose) -> {});
 
         vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});

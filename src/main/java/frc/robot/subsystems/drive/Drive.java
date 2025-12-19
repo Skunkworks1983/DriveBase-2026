@@ -122,6 +122,8 @@ public class Drive extends SubsystemBase implements VisionConsumer {
   /** Consumer to also reset the simulation field pose when resetting odometry */
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
+  private Consumer<Pose2d> resetLimelightIMUCallback;
+
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = Rotation2d.kZero;
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
@@ -140,9 +142,11 @@ public class Drive extends SubsystemBase implements VisionConsumer {
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO,
-      Consumer<Pose2d> resetSimulationPoseCallBack) {
+      Consumer<Pose2d> resetSimulationPoseCallBack,
+      Consumer<Pose2d> resetLimelightIMUCallback) {
     this.gyroIO = gyroIO;
     this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+    this.resetLimelightIMUCallback = resetLimelightIMUCallback;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -368,6 +372,8 @@ public class Drive extends SubsystemBase implements VisionConsumer {
   public void setPose(Pose2d pose) {
     // In simulation also reset the simulation field pose
     resetSimulationPoseCallBack.accept(pose);
+    // Update camera internal imu
+    resetLimelightIMUCallback.accept(pose);
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
@@ -399,5 +405,9 @@ public class Drive extends SubsystemBase implements VisionConsumer {
       new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
+  }
+
+  public void setResetVisionIMUCallback(Consumer<Pose2d> resetIMUCallback) {
+    resetLimelightIMUCallback = resetIMUCallback;
   }
 }
