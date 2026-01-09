@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.auto.CustomAutoFactory;
 import frc.robot.auto.PathFinding;
+import frc.robot.auto.TestPathCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -97,11 +98,16 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight),
+                (pose) -> {},
                 (pose) -> {});
 
         vision =
             new Vision(
                 drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
+
+        // This is a solution to the vision-drive cross dependency issue that hurts my eys, but it
+        // does work
+        drive.setResetVisionIMUCallback((pose) -> vision.resetCameraIMU(pose));
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -136,7 +142,8 @@ public class RobotContainer {
                 new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
                 new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
                 new ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.getModules()[3]),
-                simulation::setSimulationWorldPose);
+                simulation::setSimulationWorldPose,
+                (pose) -> {});
 
         vision =
             new Vision(
@@ -162,6 +169,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
+                (pose) -> {},
                 (pose) -> {});
 
         vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
@@ -219,6 +227,7 @@ public class RobotContainer {
     SmartDashboard.putData(
         "Pathfinding/Score KL",
         PathFinding.pathfindToReefScorePose(ReefFace.KL, reefPathFindIsLeft::get, drive));
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -237,7 +246,7 @@ public class RobotContainer {
               drive,
               () -> -leftJoystick.getY(), // -X (used to be)
               () -> -leftJoystick.getX(), // -Y (used to be)
-              () -> rightJoystick.getX()));
+              () -> rightJoystick.getX())); // Confirm if negitive or not
     } else {
 
       drive.setDefaultCommand(
@@ -328,5 +337,9 @@ public class RobotContainer {
     } else {
       simulation.setSimulationWorldPose(new Pose2d(10, 1.5, new Rotation2d()));
     }
+  }
+
+  public void testInit() {
+    TestPathCommands.publishTestPaths(drive);
   }
 }

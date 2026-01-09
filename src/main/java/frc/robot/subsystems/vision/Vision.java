@@ -81,6 +81,7 @@ public class Vision extends SubsystemBase {
       List<Pose3d> robotPoses = new LinkedList<>();
       List<Pose3d> robotPosesAccepted = new LinkedList<>();
       List<Pose3d> robotPosesRejected = new LinkedList<>();
+      List<Pose3d> distancePoses = new LinkedList<>();
 
       // Add tag poses
       for (int tagId : inputs[cameraIndex].tagIds) {
@@ -140,7 +141,6 @@ public class Vision extends SubsystemBase {
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
       }
 
-      // Log camera datadata
       Logger.recordOutput(
           "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
           tagPoses.toArray(new Pose3d[tagPoses.size()]));
@@ -170,6 +170,12 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+  }
+
+  public void resetCameraIMU(Pose2d newPose) {
+    for (VisionIO camera : io) {
+      camera.resetCameraIMU(newPose);
+    }
   }
 
   @FunctionalInterface

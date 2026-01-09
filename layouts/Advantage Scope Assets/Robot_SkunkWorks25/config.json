@@ -1,0 +1,32 @@
+{
+  "name": "SkunkWorks25",
+  "isFTC": false,
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": 90
+    }
+  ],
+  "position": [
+    0,
+    0,
+    0
+  ],
+  "cameras": [
+    {
+      "name": "limelight-a",
+      "rotations": [
+        {
+          "axis": "z",
+          "degrees": 180
+        }
+      ],
+      "position":[0,0,0.276225]
+    }
+  ],
+  "components": []
+}

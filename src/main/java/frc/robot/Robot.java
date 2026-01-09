@@ -8,8 +8,6 @@
 package frc.robot;
 
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.net.WebServer;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.Mode;
@@ -49,35 +47,11 @@ public class Robot extends LoggedRobot {
         break;
     }
 
-    // (robotIP):5801 will now point to a Limelight3A's (id 0) web interface stream:
-    // (robotIP):5800 will now point to a Limelight3A's (id 0) video stream:
-    PortForwarder.add(5800, "172.29.0.1", 5800);
-    PortForwarder.add(5801, "172.29.0.1", 5801);
-    PortForwarder.add(5802, "172.29.0.1", 5802);
-    PortForwarder.add(5803, "172.29.0.1", 5803);
-    PortForwarder.add(5804, "172.29.0.1", 5804);
-    PortForwarder.add(5805, "172.29.0.1", 5805);
-    PortForwarder.add(5806, "172.29.0.1", 5806);
-    PortForwarder.add(5807, "172.29.0.1", 5807);
-    PortForwarder.add(5808, "172.29.0.1", 5808);
-    PortForwarder.add(5809, "172.29.0.1", 5809);
-
-    // (robotIP):5811 will now point to a Limelight3A's (id 1) web interface stream:
-    // (robotIP):5810 will now point to a Limelight3A's (id 1) video stream:
-    PortForwarder.add(5810, "172.29.1.1", 5800);
-    PortForwarder.add(5811, "172.29.1.1", 5801);
-    PortForwarder.add(5812, "172.29.1.1", 5802);
-    PortForwarder.add(5813, "172.29.1.1", 5803);
-    PortForwarder.add(5814, "172.29.1.1", 5804);
-    PortForwarder.add(5815, "172.29.1.1", 5805);
-    PortForwarder.add(5816, "172.29.1.1", 5806);
-    PortForwarder.add(5817, "172.29.1.1", 5807);
-    PortForwarder.add(5818, "172.29.1.1", 5808);
-    PortForwarder.add(5819, "172.29.1.1", 5809);
-
     // Connect to Elastic
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
+=======
+>>>>>>> 23820bda447a59872e3f9bebfcaa66718b331b19
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
       case REAL:
@@ -88,6 +62,7 @@ public class Robot extends LoggedRobot {
 
       case SIM:
         // Running a physics simulator, log to NT
+        Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -176,8 +151,15 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
+    }
+
+    robotContainer.testInit();
   }
 
   /** This function is called periodically during test mode. */
