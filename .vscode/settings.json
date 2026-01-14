@@ -57,5 +57,5 @@
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
   ],
-  "java.format.comments.enabled": false
+  "java.dependency.enableDependencyCheckup": false
 }
