@@ -6,30 +6,28 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.GyroIOSim;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.collector.*;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveStraightAuto extends Command {
   Drive drive;
   Collector collector;
   CollectorIOTalonFX io;
+
   /** Creates a new DriveStraightAuto. */
   public DriveStraightAuto() {
-    drive = new Drive(new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
-                (pose) -> {});
+    drive =
+        new Drive(
+            new GyroIOPigeon2(),
+            new ModuleIOTalonFX(TunerConstants.FrontLeft),
+            new ModuleIOTalonFX(TunerConstants.FrontRight),
+            new ModuleIOTalonFX(TunerConstants.BackLeft),
+            new ModuleIOTalonFX(TunerConstants.BackRight),
+            (pose) -> {});
     collector = new Collector(io);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -42,7 +40,7 @@ public class DriveStraightAuto extends Command {
   @Override
   public void execute() {
     collector.setCollectorVelocity(.5);
-    ChassisSpeeds speeds = new ChassisSpeeds(0, 0.03048 , 0);
+    ChassisSpeeds speeds = new ChassisSpeeds(0, 0.03048, 0);
     drive.runVelocity(speeds);
   }
 

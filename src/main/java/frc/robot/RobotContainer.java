@@ -168,9 +168,9 @@ public class RobotContainer {
         break;
     }
 
-    //Register Named Commands to PathPlanner
-      NamedCommands.registerCommand("Run Collector", new CollectorCommand(collector, .5));
-      
+    // Register Named Commands to PathPlanner
+    NamedCommands.registerCommand("Run Collector", new CollectorCommand(collector, .5));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
