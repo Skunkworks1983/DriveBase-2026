@@ -207,8 +207,8 @@ public class RobotContainer {
       drive.setDefaultCommand(
           DriveCommands.joystickDrive(
               drive,
-              () -> -leftJoystick.getX(), // -Y (used to be)
-              () -> leftJoystick.getY(), // -X (used to be)
+              () -> -leftJoystick.getY(), // -Y (used to be)
+              () -> leftJoystick.getX(), // -X (used to be)
               () -> rightJoystick.getX()));
     } else {
 
