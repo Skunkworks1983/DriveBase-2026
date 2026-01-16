@@ -49,6 +49,6 @@ public class CollectorIOTalonFX implements CollectorIO {
   }
 
   public void setCollectorVelocity(double velocity) {
-    collectorMotor.setControl(velocityVoltageRequest.withVelocity(velocity));
+    collectorMotor.set(velocity);
   }
 }

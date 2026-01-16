@@ -223,7 +223,7 @@ public class RobotContainer {
     }
 
     //runs collector motors at the speed set in Elastic
-    JoystickButton collectorIntake = new JoystickButton(buttonJoystick, 11);
+    JoystickButton collectorIntake = new JoystickButton(buttonJoystick, 1);
     collectorIntake.whileTrue(new CollectorCommand(
         collector, 
         SmartDashboard.getNumber("/SmartDashboard/collector/motor1", 0),
