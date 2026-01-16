@@ -11,7 +11,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants;
 
 public class CollectorIOTalonFX implements CollectorIO {
 
@@ -25,9 +24,9 @@ public class CollectorIOTalonFX implements CollectorIO {
   public final StatusSignal<Current> collectorCurrent;
   private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
 
-  public CollectorIOTalonFX() {
+  public CollectorIOTalonFX(int motorID) {
 
-    collectorMotor = new TalonFX(Constants.collectorMotorID);
+    collectorMotor = new TalonFX(motorID);
 
     collectorPosition = collectorMotor.getPosition();
     collectorVelocity = collectorMotor.getVelocity();

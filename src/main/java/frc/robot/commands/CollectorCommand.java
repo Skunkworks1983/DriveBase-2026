@@ -9,13 +9,17 @@ import frc.robot.subsystems.collector.Collector;
 
 public class CollectorCommand extends Command {
 
-  double velocity;
+  double velocityOne;
+  double velocityTwo;
   Collector collector;
 
-  public CollectorCommand(Collector collector, double velocity) {
+  public CollectorCommand(Collector collector, double velocityOne, double velocityTwo) {
 
-    this.velocity = velocity;
+    this.velocityOne = velocityOne;
+    this.velocityTwo = velocityTwo;
     this.collector = collector;
+
+    addRequirements(collector);
   }
 
   @Override
@@ -23,12 +27,12 @@ public class CollectorCommand extends Command {
 
   @Override
   public void execute() {
-    collector.setCollectorVelocity(velocity);
+    collector.setCollectorVelocity(velocityOne,velocityTwo);
   }
 
   @Override
   public void end(boolean interrupted) {
-    collector.setCollectorVelocity(0);
+    collector.setCollectorVelocity(0,0);
   }
 
   @Override

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -22,7 +23,7 @@ import frc.robot.commands.CollectorCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.collector.Collector;
-import frc.robot.subsystems.collector.CollectorIO;
+import frc.robot.subsystems.collector.CollectorIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -102,7 +103,7 @@ public class RobotContainer {
             new Vision(
                 drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
 
-        collector = new Collector(new CollectorIO() {});
+        collector = new Collector(new CollectorIOTalonFX(Constants.collectorMotorOneID), new CollectorIOTalonFX(Constants.collectorMotorTwoID));
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -149,6 +150,8 @@ public class RobotContainer {
                     VisionConstants.camera1Name,
                     VisionConstants.robotToCamera1,
                     simulation::getSimulatedDriveTrainPose));
+
+        collector = null;
         break;
 
       default:
@@ -163,6 +166,7 @@ public class RobotContainer {
                 (pose) -> {});
 
         vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
+        collector = null;
         break;
     }
 
@@ -185,6 +189,9 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption("Sim Physics Test", new PathPlannerAuto("SimPhysTest"));
+
+    SmartDashboard.putNumber("/SmartDashboard/collector/motor1", 0);
+    SmartDashboard.putNumber("/SmartDashboard/collector/motor2", 0);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -215,8 +222,12 @@ public class RobotContainer {
               () -> -xboxController.getRightX()));
     }
 
+    //runs collector motors at the speed set in Elastic
     JoystickButton collectorIntake = new JoystickButton(buttonJoystick, 11);
-    collectorIntake.whileTrue(new CollectorCommand(5));
+    collectorIntake.whileTrue(new CollectorCommand(
+        collector, 
+        SmartDashboard.getNumber("/SmartDashboard/collector/motor1", 0),
+        SmartDashboard.getNumber("/SmartDashboard/collector/motor2", 0)));
 
     Logger.recordOutput("Control Scheme", Constants.controlScheme);
 
