@@ -2,7 +2,6 @@ package frc.robot.subsystems.collector;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -22,7 +21,6 @@ public class CollectorIOTalonFX implements CollectorIO {
   public final StatusSignal<AngularVelocity> collectorVelocity;
   public final StatusSignal<Voltage> collectorVoltage;
   public final StatusSignal<Current> collectorCurrent;
-  private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
 
   public CollectorIOTalonFX(int motorID) {
 
@@ -48,7 +46,7 @@ public class CollectorIOTalonFX implements CollectorIO {
     inputs.currentAmps = collectorCurrent.getValueAsDouble();
   }
 
-  public void setCollectorVelocity(double velocity) {
-    collectorMotor.set(velocity);
+  public void setCollectorVelocity(double speed) {
+    collectorMotor.set(speed);
   }
 }

@@ -10,17 +10,14 @@ import frc.robot.subsystems.collector.Collector;
 
 public class CollectorCommand extends Command {
 
-  double velocityOne;
-  double velocityTwo;
   Collector collector;
 
-  public CollectorCommand(Collector collector, double velocityOne, double velocityTwo) {
+  public CollectorCommand(Collector collector) {
 
-    this.velocityOne = velocityOne;
-    this.velocityTwo = velocityTwo;
     this.collector = collector;
 
     addRequirements(collector);
+    
   }
 
   @Override
@@ -28,12 +25,17 @@ public class CollectorCommand extends Command {
 
   @Override
   public void execute() {
-    collector.setCollectorVelocity(
-      SmartDashboard.getNumber("/SmartDashboard/collector/motor1", 0),
-      SmartDashboard.getNumber("/SmartDashboard/collector/motor2", 0));
 
-      System.out.println(SmartDashboard.getNumber("/SmartDashboard/collector/motor1", 0));
-      
+    collector.setCollectorVelocity(
+      SmartDashboard.getNumber("collector/bottomMotor", 0.6),
+      SmartDashboard.getNumber("collector/topmMotor", -0.6)
+    );
+
+    System.out.println(
+      SmartDashboard.getNumber("collector/bottomMotor", 0) + " " +
+      SmartDashboard.getNumber("collector/topMotor",0)
+    );
+
   }
 
   @Override

@@ -102,8 +102,8 @@ public class RobotContainer {
         vision = new Vision(
             drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
 
-        collector = new Collector(new CollectorIOTalonFX(Constants.collectorMotorOneID),
-            new CollectorIOTalonFX(Constants.collectorMotorTwoID));
+        collector = new Collector(new CollectorIOTalonFX(Constants.bottomCollectorMotorID),
+            new CollectorIOTalonFX(Constants.topCollectorMotorID));
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -231,10 +231,7 @@ public class RobotContainer {
     }
 
     //runs collector motors at the speed set in Elastic
-    collectorIntake.whileTrue(new CollectorCommand(
-        collector,
-        SmartDashboard.getNumber("/SmartDashboard/collector/motor1", 0),
-        SmartDashboard.getNumber("/SmartDashboard/collector/motor2", 0)));
+    collectorIntake.whileTrue(new CollectorCommand(collector));
 
     Logger.recordOutput("Control Scheme", Constants.controlScheme);
 
