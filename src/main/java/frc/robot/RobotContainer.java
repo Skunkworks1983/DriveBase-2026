@@ -64,7 +64,7 @@ public class RobotContainer {
    * <p>Only used when {@link Constants#controlScheme} is set to {@link
    * Constants.ControlScheme#XBOX}
    */
-  private final XboxController xboxController;
+  private final Joystick xboxController;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -80,7 +80,7 @@ public class RobotContainer {
       buttonJoystick = new Joystick(2);
       xboxController = null;
     } else {
-      xboxController = new XboxController(0);
+      xboxController = new Joystick(0);
       leftJoystick = null;
       rightJoystick = null;
       buttonJoystick = null;
@@ -90,20 +90,20 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight),
-                (pose) -> {});
+        drive = new Drive(
+            new GyroIOPigeon2(),
+            new ModuleIOTalonFX(TunerConstants.FrontLeft),
+            new ModuleIOTalonFX(TunerConstants.FrontRight),
+            new ModuleIOTalonFX(TunerConstants.BackLeft),
+            new ModuleIOTalonFX(TunerConstants.BackRight),
+            (pose) -> {
+            });
 
-        vision =
-            new Vision(
-                drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
+        vision = new Vision(
+            drive, new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation));
 
-        collector = new Collector(new CollectorIOTalonFX(Constants.collectorMotorOneID), new CollectorIOTalonFX(Constants.collectorMotorTwoID));
+        collector = new Collector(new CollectorIOTalonFX(Constants.collectorMotorOneID),
+            new CollectorIOTalonFX(Constants.collectorMotorTwoID));
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -126,46 +126,50 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        simulation =
-            new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+        simulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
 
         SimulatedArena.getInstance().addDriveTrainSimulation(simulation);
-        drive =
-            new Drive(
-                new GyroIOSim(simulation.getGyroSimulation()),
-                new ModuleIOTalonFXSim(TunerConstants.FrontLeft, simulation.getModules()[0]),
-                new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
-                new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
-                new ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.getModules()[3]),
-                simulation::setSimulationWorldPose);
+        drive = new Drive(
+            new GyroIOSim(simulation.getGyroSimulation()),
+            new ModuleIOTalonFXSim(TunerConstants.FrontLeft, simulation.getModules()[0]),
+            new ModuleIOTalonFXSim(TunerConstants.FrontRight, simulation.getModules()[1]),
+            new ModuleIOTalonFXSim(TunerConstants.BackLeft, simulation.getModules()[2]),
+            new ModuleIOTalonFXSim(TunerConstants.BackRight, simulation.getModules()[3]),
+            simulation::setSimulationWorldPose);
 
-        vision =
-            new Vision(
-                drive,
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name,
-                    VisionConstants.robotToCamera0,
-                    simulation::getSimulatedDriveTrainPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.camera1Name,
-                    VisionConstants.robotToCamera1,
-                    simulation::getSimulatedDriveTrainPose));
+        vision = new Vision(
+            drive,
+            new VisionIOPhotonVisionSim(
+                VisionConstants.camera0Name,
+                VisionConstants.robotToCamera0,
+                simulation::getSimulatedDriveTrainPose),
+            new VisionIOPhotonVisionSim(
+                VisionConstants.camera1Name,
+                VisionConstants.robotToCamera1,
+                simulation::getSimulatedDriveTrainPose));
 
         collector = null;
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                (pose) -> {});
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            (pose) -> {
+            });
 
-        vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
+        vision = new Vision(drive, new VisionIO() {
+        }, new VisionIO() {
+        });
         collector = null;
         break;
     }
@@ -205,6 +209,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
+    JoystickButton collectorIntake;
     if (Constants.controlScheme == Constants.ControlScheme.OI) {
       drive.setDefaultCommand(
           DriveCommands.joystickDrive(
@@ -212,20 +217,22 @@ public class RobotContainer {
               () -> -leftJoystick.getX(), // -Y (used to be)
               () -> leftJoystick.getY(), // -X (used to be)
               () -> rightJoystick.getX()));
+      collectorIntake = new JoystickButton(buttonJoystick, 1);
+
     } else {
 
       drive.setDefaultCommand(
           DriveCommands.joystickDrive(
               drive,
-              () -> -xboxController.getLeftY(),
-              () -> -xboxController.getLeftX(),
-              () -> -xboxController.getRightX()));
+              () -> xboxController.getRawAxis(0),
+              () -> -xboxController.getRawAxis(1),
+              () -> -xboxController.getRawAxis(2)));
+      collectorIntake = new JoystickButton(xboxController, 1);
     }
 
     //runs collector motors at the speed set in Elastic
-    JoystickButton collectorIntake = new JoystickButton(buttonJoystick, 1);
     collectorIntake.whileTrue(new CollectorCommand(
-        collector, 
+        collector,
         SmartDashboard.getNumber("/SmartDashboard/collector/motor1", 0),
         SmartDashboard.getNumber("/SmartDashboard/collector/motor2", 0)));
 
@@ -272,7 +279,8 @@ public class RobotContainer {
    * positioning) and resets the {@link SimulatedArena} to standard field state
    */
   public void resetSimulationField() {
-    if (Constants.currentMode != Constants.Mode.SIM) return;
+    if (Constants.currentMode != Constants.Mode.SIM)
+      return;
 
     simulation.setSimulationWorldPose(new Pose2d(12, 1, new Rotation2d()));
 
@@ -287,7 +295,8 @@ public class RobotContainer {
    *     docs</a> for information on how to display game pieces in AdvantageScope
    */
   public void updateSimulation() {
-    if (Constants.currentMode != Constants.Mode.SIM) return;
+    if (Constants.currentMode != Constants.Mode.SIM)
+      return;
 
     SimulatedArena.getInstance().simulationPeriodic();
     Logger.recordOutput("FieldSimulation/RobotPosition", simulation.getSimulatedDriveTrainPose());
